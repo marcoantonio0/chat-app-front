@@ -1,0 +1,43 @@
+<div class="dialog">
+    <button mat-icon-button  class="close" mat-dialog-close>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+    </button>
+    <div class="dialog-wrapper">
+        <h2>Adicionar amigo</h2>
+        <p>Ótimo, vamos fazer novos amigos para interagir!</p>
+        <div class="successBox" *ngIf="success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            {{ success }}
+        </div>
+        <div class="errorBox" *ngIf="error">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ error }}
+        </div>
+        <div style="margin-top: 1rem;">
+            <div class="form-control">
+                <label for="">Nome de usuário</label>
+                <input type="text" [formControl]="name" [ngClass]="{ 'hasError': name.invalid && (name.dirty && name.touched) }">
+                <small class="error" *ngIf="name.invalid && (name.dirty && name.touched)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ getError(this.name) }}
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <div class="align-buttons">
+        <button mat-flat-button  style="margin-right: 10px;" mat-dialog-close *ngIf="!isLoading">Cancelar</button>
+        <button mat-flat-button color="primary" (click)="send()" style="min-height: 36px; display: flex; align-items: center; justify-content: center;" [disabled]="isLoading">
+            {{ isLoading ? '' : 'Adicionar' }}
+            <mat-spinner diameter="21" *ngIf="isLoading"></mat-spinner>
+        </button>
+    </div>
+</div>

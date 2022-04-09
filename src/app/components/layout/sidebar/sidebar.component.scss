@@ -1,0 +1,100 @@
+.home {
+    border-radius: 50%;
+    height: 45px;
+    width: 45px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #6a5fff;
+    transition: all ease-in-out 120ms;
+    &.active, &:hover {
+        transition: all ease-in-out 220ms;
+        border-radius: 30%;
+        box-shadow: 0 0px 10px 3px #6a5fff8c;
+    }
+    img {
+        width: 100%;
+        height: auto;
+    }
+}
+
+.list-guilds {
+    margin-top: 1rem;
+}
+
+.acronym {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 32px;
+    overflow: hidden;
+}
+
+.guild-item {
+    position: relative;
+
+    &.active, &:hover {
+        .guild-wrapper{
+            transition: all ease-in-out 220ms;
+            border-radius: 30%;
+            box-shadow: 0 0px 10px 3px #6a5fff8c;
+        }
+       
+    }
+
+
+
+    .guild-wrapper {
+        border-radius: 50%;
+        height: 45px;
+        width: 45px;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #6a5fff;
+        position: relative;
+        transition: all ease-in-out 220ms;
+
+
+        picture {
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+   
+}
+
+.guild-add {
+    border-radius: 50%;
+    height: 45px;
+    width: 45px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #eee;
+    color: #6a5fff;
+    margin-top: 1rem;
+    transition: all ease-in-out 200ms;
+    &:hover {
+        transition: all ease-in-out 200ms;
+        border-radius: 30%;  
+        background-color: #6a5fff;
+        color: #eee;
+    }
+    &.active {
+        border-radius: 30%;
+    }
+    img {
+        width: 100%;
+        height: auto;
+    }
+}
+

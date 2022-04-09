@@ -1,0 +1,88 @@
+.content-channel {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+    z-index: 91;
+    .side-channel {
+        position: fixed;
+        top: 0;
+        height: 100%;
+        min-width: 280px;
+        padding-top: 56px;
+        padding-bottom: 75px;
+        background-color: #171a1c;
+    }
+
+}
+
+.wrapper-content {
+    width: 100%;
+    padding-left: 280px;
+}
+
+.channels {
+    overflow-y: auto;
+    height: 100%;
+    padding: 0 10px;
+    .channel-category {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        font-weight: 600;
+        font-size: 13px;
+        padding: 8px 0;     
+        font-weight: 600;  
+    }
+    .channel-list {
+        list-style: none;
+        padding: 0;
+    }
+    .channel-item {
+        border-radius: 5px;
+        background-color: transparent;
+        padding: 10px 8px;
+        margin-bottom: 5px;
+        transition: all ease-in-out 120ms;
+        display: flex;
+        align-items: center;
+        color: #c9c9c9;
+        svg {
+           
+            margin-right: 10px;
+        }
+        span {
+            font-weight: 500;
+        }
+        &.active {
+            color: #fff;
+            transition: all ease-in-out 120ms;
+            background-color: hsl(220deg 7% 16%);
+   
+        }
+        &:hover {
+            cursor: pointer;
+            transition: all ease-in-out 120ms;
+            background-color: hsl(220deg 7% 16%);
+        }
+    }
+}
+
+
+
+.guild-info-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background: #27292d;
+    min-height: 54px;
+    align-items: center;
+    display: flex;
+    box-shadow:  0 5px 5px rgb(0 0 0 / 10%);
+    .title {
+        font-weight: 600;
+        font-size: 15px;
+    }
+}

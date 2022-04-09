@@ -1,0 +1,66 @@
+<div class="friend-wrapper">
+    <div class="header-friend">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="margin-right: 5px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        <h2>
+            Amigos
+        </h2>
+        <span class="separator"></span>
+        <ul class="tabs-menu">
+            <li class="tab-item " [ngClass]="{ 'active': currentTab == 'ONLINE' }">
+                <a class="tab-link" (click)="changeTab('ONLINE')">
+                    Disponível
+                </a>
+            </li>
+            <li class="tab-item" [ngClass]="{ 'active': currentTab == 'ALL' }">
+                <a class="tab-link" (click)="changeTab('ALL')">
+                    Todos
+                </a>
+            </li>
+            <li class="tab-item" [ngClass]="{ 'active': currentTab == 'PEDING' }">
+                <a class="tab-link" (click)="changeTab('PEDING')">
+                    Pendente
+                </a>
+            </li>
+            <li class="tab-item" [ngClass]="{ 'active': currentTab == 'BLOCKED' }">
+                <a class="tab-link" (click)="changeTab('BLOCKED')">
+                    Bloqueado
+                </a>
+            </li>
+            <li class="tab-item bg-green">
+                <button class="tab-button" (click)="newFriend()" matRipple>
+                    Adicionar amigo
+                </button>
+            </li>
+        </ul>
+    </div>
+    <div class="content-me">
+        <div style="padding:  1rem;">
+            <div *ngIf="currentTab == 'ONLINE'">
+                <span class="title">
+                    <span>Disponível <span *ngIf="total > 0">— {{ total }}</span></span>
+                </span>
+                <app-list-friend [users]="users"></app-list-friend>
+            </div>
+            <div *ngIf="currentTab == 'ALL'">
+                <span class="title">
+                    <span>Todos <span *ngIf="total > 0">— {{ total }}</span></span>
+                </span>
+                <app-list-friend [users]="users"></app-list-friend>
+            </div>
+            <div *ngIf="currentTab == 'PEDING'">
+                <span class="title">
+                    <span>Pendente <span *ngIf="total > 0">— {{ total }}</span></span>
+                </span>
+                <app-list-friend [users]="users" [type]="'REQUEST'"></app-list-friend>
+            </div>
+            <div *ngIf="currentTab == 'BLOCKED'">
+                <span class="title">
+                    <span>Bloqueado <span *ngIf="total > 0">— {{ total }}</span></span>
+                </span>
+                <app-list-friend [users]="users"></app-list-friend>
+            </div>
+        </div>
+        </div>
+</div>

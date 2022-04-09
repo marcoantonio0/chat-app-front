@@ -1,0 +1,52 @@
+<main *ngIf="!isLoading">
+    <nav class="sidenav">
+        <app-sidebar></app-sidebar>
+    </nav>
+    <div class="content">
+        <div class="user-content">
+            <div class="user-wrapper">
+                <div class="user" > 
+                    <div class="avatar" [matMenuTriggerFor]="menu">
+                        <picture class="avatar"></picture>
+                        <span class="status" [ngClass]="{ 'ONLINE' : me.activity_status == 'ONLINE', 'OFFLINE' : me.activity_status == 'OFFLINE', 'BUZY' : me.activity_status == 'BUZY', 'AFK' : me.activity_status == 'AFK'  }"></span>
+                    </div>
+                    <div class="name-username">
+                        <span class="name" >{{ me.name }}</span>    
+                        <span class="username" >{{ me.username }}</span>                          
+                    </div>  
+                </div>
+                <mat-menu #menu="matMenu" class="menu-minimal">
+                    <button mat-menu-item>
+                        <span class="status-item ONLINE"></span> Online
+                    </button>
+                    <hr>
+                    <button mat-menu-item>
+                        <span class="status-item AFK"></span> Ausente
+                    </button>
+                    <button mat-menu-item>
+                        <div style="display: flex; flex-direction: row;">
+                            <span class="status-item BUZY" style="margin-right: 5px;"></span> 
+                            <div style="display: flex; flex-direction: column; white-space: pre-wrap;">
+                                <span>Não perturbar</span>
+                                <small>Para quando não querem que encha o saco.</small>
+                            </div>
+                        </div>
+                    </button>
+                    <button mat-menu-item>
+                        <div style="display: flex; flex-direction: row;">
+                            <span class="status-item OFFLINE" style="margin-right: 5px;"></span> 
+                            <div style="display: flex; flex-direction: column; white-space: pre-wrap;">
+                                <span>Invisivel</span>
+                                <small>Você ficará offline para os demais porém continuará usando o app.</small>
+                            </div>
+                        </div>
+                    </button>
+                </mat-menu>
+            </div>
+        </div>
+        <router-outlet></router-outlet>
+    </div>
+</main>
+<div class="root" *ngIf="isLoading">
+    <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+</div>

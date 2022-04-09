@@ -1,0 +1,76 @@
+<ul class="list-friends">
+    <li class="friend-item" *ngFor="let user of users; let i = index">
+        <div class="user">
+            <div class="icon">
+                <div class="icon-wrapper">
+                    <picture></picture>
+                    <span class="status" [ngClass]="{ 'ONLINE' : user.activity_status == 'ONLINE', 'OFFLINE' : user.activity_status == 'OFFLINE', 'BUZY' : user.activity_status == 'BUZY', 'AFK' : user.activity_status == 'AFK'  }"></span>
+                </div>
+            </div>
+            <div class="user-info-wrapper">
+                <div class="name-wrapper">
+                    <span class="name">{{ user.name }}</span>
+                    <span class="username">{{ user.username }}</span>
+                </div>
+                <span class="status-activity " *ngIf="type == 'LIST'">
+                    <span *ngIf="user.activity_status == 'ONLINE'">Disponível</span>
+                    <span *ngIf="user.activity_status == 'OFFLINE'">Offline</span>
+                    <span *ngIf="user.activity_status == 'BUZY'">Ocupado</span>
+                    <span *ngIf="user.activity_status == 'AFK'">Ausente</span>
+                </span>
+                <span class="status-activity " *ngIf="type == 'REQUEST'">
+                    <span *ngIf="!user.is_requester" >Pedido de amizade recebido</span>
+                    <span *ngIf="user.is_requester" >Pedido de amizade enviado</span>
+                </span>
+            </div>
+        </div>
+        <div class="options" *ngIf="type == 'LIST'">
+            <button mat-icon-button ngxTippy data-tippy-content="Iniciar conversa" [tippyProps]="{
+                placement: 'top'
+              }" >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <button mat-icon-button ngxTippy data-tippy-content="Mais" [tippyProps]="{
+                placement: 'top'
+              }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+              </svg>
+            </button>
+        </div>
+        <div class="options" *ngIf="type == 'REQUEST'">
+            <button mat-icon-button *ngIf="!user.is_requester" (click)="acceptOrRecuse('accept', user._id, i)" ngxTippy data-tippy-content="Aceitar" [tippyProps]="{
+                placement: 'top'
+              }" style="color: #00a050">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </button>
+            <button mat-icon-button *ngIf="!user.is_requester" (click)="acceptOrRecuse('recuse', user._id, i)" ngxTippy data-tippy-content="Ignorar" [tippyProps]="{
+                placement: 'top'
+              }" style="color: #ff5353;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <button mat-icon-button *ngIf="user.is_requester" (click)="deleteRequest(user._id, i)" ngxTippy data-tippy-content="Remover" [tippyProps]="{
+                placement: 'top'
+              }" style="color: #ff5353;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+        </div>
+        <div class="options" *ngIf="type == 'BLOCKED'">
+            <button mat-icon-button ngxTippy data-tippy-content="Desbloquear" [tippyProps]="{
+                placement: 'top'
+              }" style="color: #ff5353;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+        </div>
+    </li>
+</ul>

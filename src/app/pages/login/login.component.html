@@ -1,0 +1,45 @@
+<div class="container-login">
+    <div class="div1">
+
+    </div>
+    <div class="div2">
+        <div class="login-wrapper">
+            <h1>Entrar no App</h1>
+            <div class="login-box">
+                <div class="errorBox" *ngIf="error">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ error }}
+                </div>
+                <form [formGroup]="loginGroup" (ngSubmit)="login()">
+                    <div class="login-control">
+                        <label for="">E-mail</label>
+                        <input type="text" formControlName="username">
+                        <small class="error" *ngIf="loginGroup.controls['username'].invalid && (loginGroup.controls['username'].dirty && loginGroup.controls['username'].touched)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ getError(loginGroup.controls['username']) }}
+                        </small>
+                    </div>
+                    <div class="login-control">
+                        <label for="">Senha</label>
+                        <input type="password" formControlName="password" >
+                        <small class="error" *ngIf="loginGroup.controls['password'].invalid && (loginGroup.controls['password'].dirty && loginGroup.controls['password'].touched)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ getError(loginGroup.controls['password']) }}
+                        </small>
+                    </div>
+                    <button type="submit" class="btn" [disabled]="isLoading">
+                        {{ isLoading ? '':'Entrar' }}
+                        <img src="../../../assets/Rolling-1s-200px.svg" alt="Loading" width="56px" height="56px" *ngIf="isLoading">
+                    </button>
+                </form>
+            </div>
+            <span>Não possui uma conta? <a [routerLink]="['/register']">Registre-se</a></span>
+        </div>
+    </div>
+</div>

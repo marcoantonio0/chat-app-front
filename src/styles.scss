@@ -1,1 +1,428 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+@include mat.core();
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+
+// Foreground Elements
+
+// Light Theme Text
+$dark-text: #000000;
+$dark-primary-text: rgba($dark-text, 0.87);
+$dark-accent-text: rgba($dark-primary-text, 0.54);
+$dark-disabled-text: rgba($dark-primary-text, 0.38);
+$dark-dividers: rgba($dark-primary-text, 0.12);
+$dark-focused: rgba($dark-primary-text, 0.12);
+
+
+// Dark Theme text
+$light-text: #ffffff;
+$light-primary-text: $light-text;
+$light-accent-text: rgba($light-primary-text, 0.7);
+$light-disabled-text: rgba($light-primary-text, 0.5);
+$light-dividers: rgba($light-primary-text, 0.12);
+$light-focused: rgba($light-primary-text, 0.12);
+
+$mat-dark-theme-foreground: (
+  base:              $light-text,
+  divider:           $light-dividers,
+  dividers:          $light-dividers,
+  disabled:          $light-disabled-text,
+  disabled-button:   rgba($light-text, 0.3),
+  disabled-text:     $light-disabled-text,
+  elevation:         black,
+  hint-text:         $light-disabled-text,
+  secondary-text:    $light-accent-text,
+  accent-text:       $light-accent-text,
+  icon:              $light-text,
+  icons:             $light-text,
+  text:              $light-text,
+  slider-min:        $light-text,
+  slider-off:        rgba($light-text, 0.3),
+  slider-off-active: rgba($light-text, 0.3),
+);
+
+// Background config
+// Light bg
+$light-background:    #fafafa;
+$light-bg-darker-5:   darken($light-background, 5%);
+$light-bg-darker-10:  darken($light-background, 10%);
+$light-bg-darker-20:  darken($light-background, 20%);
+$light-bg-darker-30:  darken($light-background, 30%);
+$light-bg-lighter-5:  lighten($light-background, 5%);
+$dark-bg-tooltip:     lighten(#161616, 20%);
+$dark-bg-alpha-4:     rgba(#161616, 0.04);
+$dark-bg-alpha-12:    rgba(#161616, 0.12);
+
+// Dark bg
+$dark-background:     #161616;
+$dark-bg-lighter-5:   lighten($dark-background, 5%);
+$dark-bg-lighter-10:  lighten($dark-background, 10%);
+$dark-bg-lighter-20:  lighten($dark-background, 20%);
+$dark-bg-lighter-30:  lighten($dark-background, 30%);
+$light-bg-alpha-4:    rgba(#fafafa, 0.04);
+$light-bg-alpha-12:   rgba(#fafafa, 0.12);
+
+// Background palette for dark themes.
+$mat-dark-theme-background: (
+  background:               $dark-background,
+  status-bar:               $dark-bg-lighter-20,
+  app-bar:                  $dark-bg-lighter-5,
+  hover:                    $light-bg-alpha-4,
+  card:                     $dark-bg-lighter-5,
+  dialog:                   $dark-bg-lighter-5,
+  tooltip:                  $dark-bg-lighter-20,
+  disabled-button:          $light-bg-alpha-12,
+  raised-button:            $dark-bg-lighter-5,
+  focused-button:           $light-focused,
+  selected-button:          $dark-bg-lighter-20,
+  selected-disabled-button: $dark-bg-lighter-30,
+  disabled-button-toggle:   $dark-bg-lighter-10,
+  unselected-chip:          $dark-bg-lighter-20,
+  disabled-list-option:     $dark-bg-lighter-10,
+);
+
+
+// Theme Config
+
+body {
+  --primary-color: #6a5fff;
+  --primary-lighter-color: #d2cfff;
+  --primary-darker-color: #4d43ff;
+  --text-primary-color: #{$light-primary-text};
+  --text-primary-lighter-color: #{$dark-primary-text};
+  --text-primary-darker-color: #{$light-primary-text};
+  position: relative;
+}   
+$mat-primary: (
+  main: #6a5fff,
+  lighter: #d2cfff,
+  darker: #4d43ff,
+  200: #6a5fff, // For slide toggle,
+  contrast : (
+    main: $light-primary-text,
+    lighter: $dark-primary-text,
+    darker: $light-primary-text,
+  )
+);
+$theme-primary: mat.define-palette($mat-primary, main, lighter, darker);
+
+
+body {
+  --accent-color: #1c1e1f;
+  --accent-lighter-color: #bbbcbc;
+  --accent-darker-color: #111212;
+  --text-accent-color: #{$light-primary-text};
+  --text-accent-lighter-color: #{$dark-primary-text};
+  --text-accent-darker-color: #{$light-primary-text};
+}   
+$mat-accent: (
+  main: #1c1e1f,
+  lighter: #bbbcbc,
+  darker: #111212,
+  200: #1c1e1f, // For slide toggle,
+  contrast : (
+    main: $light-primary-text,
+    lighter: $dark-primary-text,
+    darker: $light-primary-text,
+  )
+);
+$theme-accent: mat.define-palette($mat-accent, main, lighter, darker);
+
+
+body {
+  --warn-color: #ff0000;
+  --warn-lighter-color: #ffb3b3;
+  --warn-darker-color: #ff0000;
+  --text-warn-color: #{$light-primary-text};
+  --text-warn-lighter-color: #{$dark-primary-text};
+  --text-warn-darker-color: #{$light-primary-text};
+}   
+$mat-warn: (
+  main: #ff0000,
+  lighter: #ffb3b3,
+  darker: #ff0000,
+  200: #ff0000, // For slide toggle,
+  contrast : (
+    main: $light-primary-text,
+    lighter: $dark-primary-text,
+    darker: $light-primary-text,
+  )
+);
+$theme-warn: mat.define-palette($mat-warn, main, lighter, darker);
+;
+
+$theme: (
+  primary: $theme-primary,
+  accent: $theme-accent,
+  warn: $theme-warn,
+  is-dark: true,
+  foreground: $mat-dark-theme-foreground,
+  background: $mat-dark-theme-background,
+);
+
+
+// Theme Init
+@include mat.all-component-themes($theme);
+
+
+.mat-raised-button, .mat-stroked-button, .mat-flat-button {
+  padding: 0 1.15em;
+  margin: 0 .65em;
+  min-width: 3em;
+  line-height: 36.4px
+}
+
+.mat-standard-chip {
+  padding: .5em .85em;
+  min-height: 2.5em;
+}
+
+.material-icons {
+  font-size: 24px;
+  font-family: 'Material Icons', 'Material Icons';  
+  .mat-badge-content {
+    font-family: 'Roboto';
+  }
+}
+
+
+* {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    box-sizing: border-box;
+    
+}
+
+body, html {
+    height: 100%;
+    width: 100%;
+    color: #fff;
+    font-size: 14px;
+    background-color: #161616;
+}
+
+.custom-dialog {
+    .mat-dialog-container {
+        background-color: #1c1e1f;
+        color: #fff;
+        padding: 0;
+    }
+}
+
+.errorBox {
+    background-color: #ff5f5f;
+    padding: 1rem;
+    border-radius: 5px;
+    color: #fff;
+    margin: 1rem 0;
+    display: flex;
+    font-size: 14px;
+    flex-direction: row;
+    svg {
+        margin-right: 5px;
+    }
+}
+
+.successBox {
+    background-color: #00a050;
+    padding: 1rem;
+    border-radius: 5px;
+    color: #fff;
+    margin: 1rem 0;
+    display: flex;
+    font-size: 14px;
+    flex-direction: row;
+    svg {
+        margin-right: 5px;
+    }
+}
+
+.error {
+    display: flex;
+    align-items: center;
+    line-height: 1.6;
+    color: #ff5f5f;
+    margin-top: 2px;
+    svg {
+        margin-right: 4px;
+    }
+}
+
+
+main {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+.menu-minimal {
+    background-color: #1c1e1f;
+    color:#fff;
+    hr {
+        border-top: none;
+        border-color: #eeeeee1c;
+    }
+    button {
+        color:#fff;
+        padding: 10px 15px;
+        height: auto;
+        line-height: 1.2;
+        font-size: 14px;
+    }
+    small {
+        color: #666;
+    }
+    .mat-menu-item:hover:not([disabled]), .mat-menu-item.cdk-program-focused:not([disabled]), .mat-menu-item.cdk-keyboard-focused:not([disabled]), .mat-menu-item-highlighted:not([disabled]) {
+        background-color: rgba(255, 255, 255, 0.048);
+    }
+}
+    
+nav {
+    width: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 5px;
+    background-color: #1c1e1f;
+    min-width: 80px;
+    position: fixed;
+    top: 0;
+    height: 100%;
+    box-shadow: 5px 0px 5px #16161663;
+    z-index: 99;
+}
+.content {
+    width: 100%;
+    padding-left: 80px;
+}
+
+.tabs-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    li {
+        margin-right: 10px;
+         
+        a, button {
+            display: inline-block;
+            text-decoration: none;
+            appearance: none;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: transparent;
+            color: #fff;
+            font-weight: 600;
+            padding: 5px 10px;
+            line-height: 1.2;
+            border-radius: 5px;
+            transition: all ease-in-out 120ms;
+            &:hover {
+                transition: all ease-in-out 120ms;
+                background-color: rgba(255, 255, 255, 0.096);
+            }
+        }
+        &.bg-green {
+            a, button {
+                background-color: #00a050;
+            }
+        }
+    }
+    li.active {
+        a, button {
+            background-color: rgba(255, 255, 255, 0.096);
+        }
+    }
+    li:last-child {
+        margin-right: 0;
+    }
+
+}
+
+.form-control {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: .95rem;
+    width: 100%;
+    label {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: .75rem;
+        opacity: .7;
+    }
+    input, select {
+        line-height: 1.4;
+        font-size: 15px;
+        border-radius: 5px;
+        padding: .75rem;
+        background-color: #282a2b;
+        outline: none;
+        border: none;
+        color: #fff;
+        width: 100%;
+        border: 1px solid transparent;
+        transition: all ease-in-out 120ms;
+        &:focus {
+            border-color: #6a5fff;
+            box-shadow: 0 0px 0px 3px #8880ff4a;
+            transition: all ease-in-out 120ms;
+        }
+        &:disabled{
+            opacity: .6;
+            cursor: default;
+        }
+        &.hasError {
+            border-color: #ff5f5f;
+        }
+    }
+    select {
+        option:invalid{
+            color: gray;
+        }
+    }
+}
+
+.layerContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: none!important;
+    pointer-events: none;
+    z-index: 1002;
+    .layer {
+        position: absolute;
+        pointer-events: auto;
+    }
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: rgba(146, 146, 146, 0.192);
+    border-radius: 20px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+
+  .context-menu {
+      min-height: 200px;
+      background-color: black;
+      box-shadow: 0 2px 5px rgba(0,0,0,.5);
+  }
