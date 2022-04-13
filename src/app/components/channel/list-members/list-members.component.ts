@@ -1,4 +1,4 @@
-import { SocketService } from './../../../../_services/socket.service';
+import { SocketService } from '../../../_services/socket.service';
 import { GuildService } from 'src/app/_services/guild.service';
 import { Component, Input, OnInit } from '@angular/core';
 

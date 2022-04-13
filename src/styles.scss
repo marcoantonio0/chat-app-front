@@ -260,16 +260,20 @@ main {
 }
 
 .menu-minimal {
-    background-color: #1c1e1f;
+    background: #161819 !important;
+    border: 1px solid rgba(0, 0, 0, 0.18) !important;
     color:#fff;
+    padding: 5px;
     hr {
         border-top: none;
-        border-color: #eeeeee1c;
+        border-color: #242728;
+        margin: 10px 0
     }
     button {
-        color:#fff;
-        padding: 10px 15px;
+        color:rgba(255, 255, 255, 0.795);
+        padding: 8px 10px;
         height: auto;
+        border-radius: 3px;
         line-height: 1.2;
         font-size: 14px;
     }
@@ -277,7 +281,11 @@ main {
         color: #666;
     }
     .mat-menu-item:hover:not([disabled]), .mat-menu-item.cdk-program-focused:not([disabled]), .mat-menu-item.cdk-keyboard-focused:not([disabled]), .mat-menu-item-highlighted:not([disabled]) {
-        background-color: rgba(255, 255, 255, 0.048);
+        background-color: rgb(106 95 255);
+        color: #fff;
+        small {
+          color: #fff
+        }
     }
 }
     

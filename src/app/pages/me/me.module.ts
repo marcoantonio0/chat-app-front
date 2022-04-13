@@ -1,3 +1,4 @@
+import { NgScrollbarModule } from 'ngx-scrollbar';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -12,6 +13,7 @@ import { MeComponent } from './me.component';
   ],
   imports: [
     CommonModule,
+    NgScrollbarModule,
     MeRoutingModule
   ]
 })

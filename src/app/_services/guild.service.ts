@@ -18,21 +18,37 @@ export class GuildService {
     return this.http.post(environment.baseUrl+'/guild', data);
   }
 
-  list(): Observable<any[]> {
-    return this.http.get<any[]>(environment.baseUrl+'/guild');
+  getGuilds(): Observable<any[]> {
+   return new Observable(subscribe => {
+      if(this.guilds.value.length <= 0){
+        this.http.get<any[]>(environment.baseUrl+'/guild').subscribe(guilds => {
+          this.guilds.next([ ...guilds ]);
+          subscribe.next(guilds);
+        })
+      } else {
+        subscribe.next(this.guilds.value);
+        this.http.get<any[]>(environment.baseUrl+'/guild').subscribe(guilds => {
+          this.guilds.next([ ...guilds ]);
+          subscribe.next(guilds);
+          subscribe.complete();
+        })
+      }
+    })
   }
 
   get(guildId: string): Observable<any> {
-    return this.http.get<any>(environment.baseUrl+'/guild/'+guildId).pipe(map(guild => {
-      if (this.guilds.value.filter(x => x._id == guildId).length <= 0) {
-        let value = [];
-        if(this.guilds.value.length >= 10){
-           value = this.guilds.value.pop()
-        }
-        this.guilds.next([ guild, ...value ]);
+    return new Observable(subscribe => {
+      if(this.guilds.value.filter(x => x._id == guildId).length <= 0){
+        this.http.get<any>(environment.baseUrl+'/guild/'+guildId).subscribe(guild => {
+          this.guilds.next([ ...this.guilds.value, guild ]);
+          subscribe.next(guild);
+          subscribe.complete();
+        })
+      } else {
+        subscribe.next(this.guilds.value.filter(x => x._id == guildId)[0]);
+        subscribe.complete();
       }
-      return guild;
-    }))
+    })
   }
 
   getMembers(guildId: string): Observable<any[]> {

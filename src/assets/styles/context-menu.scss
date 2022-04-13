@@ -45,15 +45,15 @@ context-menu-content {
     --ngx-contextmenu-margin: 2px 0 0;
     --ngx-contextmenu-min-width: 160px;
     --ngx-contextmenu-outline: 1px solid #70757e;
-    --ngx-contextmenu-padding: 5px 0;
-    --ngx-contextmenu-text-color: #fff;
+    --ngx-contextmenu-padding: 5px;
+    --ngx-contextmenu-text-color: rgba(255, 255, 255, 0.603);
     --ngx-contextmenu-text-disabled-color: #8a909a;
   
     // Styling of context menu items
     --ngx-contextmenu-item-arrow-left: '◀';
     --ngx-contextmenu-item-arrow-right: '▶';
-    --ngx-contextmenu-item-background-hover-color: rgba(255, 255, 255, 0.041);
-    --ngx-contextmenu-item-separator-color: #8a909a;
+    --ngx-contextmenu-item-background-hover-color: rgb(106 95 255);
+    --ngx-contextmenu-item-separator-color: #242728;
     --ngx-contextmenu-item-separator-padding: 10px;
     --ngx-contextmenu-item-separator-width: 96%;
     --ngx-contextmenu-item-padding: 6px 20px;
@@ -114,6 +114,7 @@ context-menu-content {
             justify-content: space-between;
             text-decoration: none;
             white-space: nowrap;
+            border-radius: 3px;
   
             &:not(.disabled):not(.ngx-contextmenu--item-content-passive) {
               &:hover,
@@ -145,5 +146,15 @@ context-menu-content {
           }
         }
       }
+    }
+  }
+  .red-context {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    color: rgba(255, 75, 75, 0.623);
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.041);
+      color: rgb(255, 75, 75);
     }
   }

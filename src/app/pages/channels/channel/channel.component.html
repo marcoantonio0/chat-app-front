@@ -23,6 +23,7 @@
                             <li class="chat-item "  [id]="'message-'+i" [ngClass]="{ 
                                 'isOwn': message.author._id == me.meSubject.value._id, 
                                 'slide-top':  message.animation,
+                                'same-block': i > 0 &&( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh:mm') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh:mm')),
                                 'recived': message.recived }">
                                 <div class="author" *ngIf="
                                   i > 0 &&( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh:mm') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh:mm'))
@@ -62,7 +63,7 @@
                 </div>
             </div>
         </div>
-        <div class="guild-wrapper">
+        <div class="guild-wrapper" >
             <list-members [guildId]="guildId"></list-members>
         </div>
     </div>

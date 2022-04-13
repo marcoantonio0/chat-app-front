@@ -1,3 +1,4 @@
+import { SocketService } from './_services/socket.service';
 import { Component, HostListener } from '@angular/core';
 import { ElectronService } from './_services/electron.service';
 
@@ -8,7 +9,9 @@ import { ElectronService } from './_services/electron.service';
 })
 export class AppComponent {
   maximized = false;
+  status: string = '';
   constructor(
+    private socket: SocketService,
     public electron: ElectronService
   ) {
     if(electron.isElectron()){
@@ -20,6 +23,10 @@ export class AppComponent {
         }
       })
     }
+
+    this.socket.statusSocket.subscribe(status => {
+      this.status = status;
+    })
   }
   title = 'chat-app-front';
 

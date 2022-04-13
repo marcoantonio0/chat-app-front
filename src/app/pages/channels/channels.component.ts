@@ -38,7 +38,6 @@ export class ChannelsComponent implements OnInit {
         if(guild['channels'].length > 0 && guild['channels']?.filter((x:any) => x.is_home == true)?.length > 0) {
           channelHome = guild['channels']?.filter((x:any) => x.is_home == true)[0]._id;
         }
-        console.log(this.router.url.split('/').length);
         if(channelHome && this.router.url.split('/').length <= 3){
           this.router.navigate(['/channels/'+guild._id+'/'+channelHome]);
         }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { UserService } from 'src/app/_services/user.service';
@@ -12,6 +12,7 @@ import { UserService } from 'src/app/_services/user.service';
 export class AddFriendComponent implements OnInit {
   error = '';
   success = '';
+  @ViewChild('focus', { static: true }) focus!: ElementRef<HTMLInputElement>;
   isLoading = false;
   name = new FormControl('', [Validators.required]);
   constructor(
@@ -24,6 +25,12 @@ export class AddFriendComponent implements OnInit {
       return 'Este campo é requirido.'
     }
     return '';
+  }
+
+  keyEnter(e: KeyboardEvent){
+    if(e.key == 'Enter'){
+      this.send();
+    }
   }
   
 
@@ -48,12 +55,14 @@ export class AddFriendComponent implements OnInit {
         this.name.enable();
         this.dialogRef.disableClose = false;
         this.success = r.message;
+        this.focus.nativeElement.focus();
       },e  => {
         this.error = e.error.message;
         this.isLoading = false;
         this.name.reset();
         this.name.enable();
         this.dialogRef.disableClose = false;
+        this.focus.nativeElement.focus();
       })
     }
   }

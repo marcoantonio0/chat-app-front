@@ -8,12 +8,12 @@
     </div>
 </div>
 <div class="list-guilds">
-    <div class="guild-item" *ngFor="let guild of guilds" [routerLink]="['/channels/'+guild.guild._id]" [ngClass]="{'active':checkIsActive(guild.guild._id)}" ngxTippy [attr.data-tippy-content]="guild.guild.name" [tippyProps]="{
+    <div class="guild-item" *ngFor="let guild of guilds" [routerLink]="['/channels/'+guild._id]" [ngClass]="{'active':checkIsActive(guild._id)}" ngxTippy [attr.data-tippy-content]="guild.name" [tippyProps]="{
         placement: 'right'
       }">
         <div class="guild-wrapper">
-          <picture *ngIf="guild.guild.icon" [ngStyle]="{'background-image':'url('+guild.guild.icon+')'}"></picture>
-          <span class="acronym" *ngIf="!guild.guild.icon">{{ acronym(guild.guild.name) }}</span>
+          <picture *ngIf="guild.icon" [ngStyle]="{'background-image':'url('+guild.icon+')'}"></picture>
+          <span class="acronym" *ngIf="!guild.icon">{{ acronym(guild.name) }}</span>
         </div>
     </div>
 </div>

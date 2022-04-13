@@ -1,9 +1,12 @@
+import { ChannelService } from 'src/app/_services/channel.service';
+import { GuildService } from 'src/app/_services/guild.service';
 import { SocketService } from './../../../_services/socket.service';
 import { AuthService } from './../../../_services/auth.service';
 import { Router } from '@angular/router';
 import { ElectronService } from './../../../_services/electron.service';
 import { Component, OnInit } from '@angular/core';
 import { MeService } from 'src/app/_services/me.service';
+import { firstValueFrom, EMPTY } from 'rxjs';
 
 
 @Component({
@@ -18,22 +21,14 @@ export class ContentComponent implements OnInit {
     private sMe: MeService,
     private router: Router,
     private auth: AuthService,
+    private guild: GuildService,
+    private channel: ChannelService,
     private socket: SocketService,
     public electron: ElectronService
   ) {
-    this.sMe.me().subscribe(r => {
-      this.sMe.meSubject.next(r);
-      this.me = r;
-      if(this.router.url == '/'){
-        this.router.navigate(['/@me'])
-      }
-      this.socket.connect();
-      this.socket.statusSocket.subscribe(e =>{
-        if(e == 'CONNECTED'){
-          this.isLoading = false;
-        }
-      })
-    })
+    if(this.router.url == '/'){
+      this.router.navigate(['/@me'])
+    }
   }
 
   getAuth(){
@@ -46,7 +41,24 @@ export class ContentComponent implements OnInit {
     // })
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    const me: any = await firstValueFrom(this.sMe.me())
+    this.sMe.meSubject.next(me);
+    this.me = me;
+    const guilds = await firstValueFrom(this.guild.getGuilds());
+    console.log(guilds);
+    if(guilds.length > 0){
+      guilds.forEach(guild=> {
+        this.channel.addGuildChannels(guild._id, guild.channels);
+      })
+    }
+    await firstValueFrom(this.channel.listDM())
+    this.socket.connect();
+    this.socket.statusSocket.subscribe(e =>{
+      if(e == 'CONNECTED'){
+        this.isLoading = false;
+      }
+    })
   }
 
 }

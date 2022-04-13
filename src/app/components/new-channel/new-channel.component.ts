@@ -1,5 +1,5 @@
 import { ChannelService } from './../../_services/channel.service';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UserService } from 'src/app/_services/user.service';
@@ -16,6 +16,7 @@ export class NewChannelComponent implements OnInit {
     isLoading = false;
     guildId = '';
     type = 0;
+    @ViewChild('focus', { static: true }) focus!: ElementRef<HTMLInputElement>
     name = new FormControl('', [Validators.required]);
     constructor(
       private dialogRef: MatDialogRef<NewChannelComponent>,
@@ -32,6 +33,12 @@ export class NewChannelComponent implements OnInit {
         return 'Este campo é requirido.'
       }
       return '';
+    }
+
+    keyEnter(e: KeyboardEvent){
+      if(e.key == 'Enter'){
+        this.send();
+      }
     }
     
   
@@ -60,7 +67,9 @@ export class NewChannelComponent implements OnInit {
           this.name.enable();
           this.dialogRef.disableClose = false;
           this.success = r.message;
+          this.focus.nativeElement.focus();
         },e  => {
+          this.focus.nativeElement.focus();
           this.error = e.error.message;
           this.isLoading = false;
           this.name.reset();

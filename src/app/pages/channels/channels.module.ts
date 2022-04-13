@@ -8,8 +8,7 @@ import { ChannelsComponent } from './channels.component';
 import { ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
 import { NgxTippyModule } from 'ngx-tippy-wrapper';
 import { NgScrollbarModule } from 'ngx-scrollbar';
-
-
+import { ChannelComponentModule } from 'src/app/components/channel/channel.module';
 
 
 @NgModule({
@@ -20,6 +19,7 @@ import { NgScrollbarModule } from 'ngx-scrollbar';
     CommonModule,
     ContextMenuModule,
     NgxTippyModule,
+    ChannelComponentModule,
     NgScrollbarModule,
     NewChannelModule,
     MatDialogModule,

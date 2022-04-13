@@ -1,3 +1,4 @@
+import { ChannelService } from 'src/app/_services/channel.service';
 import { ElectronService } from './../../_services/electron.service';
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
@@ -9,11 +10,12 @@ import { NavigationEnd, Router } from '@angular/router';
 })
 export class MeComponent implements OnInit {
   currentUrl = '';
+  channels: any[] = [];
   constructor(
     private router: Router,
+    private channel: ChannelService,
     public electron: ElectronService
   ) {
-    
     this.router.events.subscribe((val) => {
      
     });
@@ -27,6 +29,15 @@ export class MeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.channel.listDM().subscribe({
+      next: (channels) =>{
+        console.log(channels);
+        this.channels = channels;
+      },
+      error: (error) =>{
+
+      }
+    })
   }
 
 }

@@ -15,7 +15,7 @@ export class SidebarComponent implements OnInit {
     private _dialog: MatDialog,
     private guild: GuildService
   ) {
-    this.guild.list().subscribe(r => this.guilds = r)
+    this.guild.guilds.subscribe(guilds => this.guilds = guilds);
   }
 
   newServer(){
