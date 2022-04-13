@@ -1,5 +1,69 @@
 <div class="chat-content">
-    <div class="header-channel">
+    <div class="header-channel" >
         {{ channel.name }}
+    </div>
+    <div class="chat-container">
+        <div class="chat-wrapper">
+            <div class="chat-view">
+                <ng-scrollbar #scrollable [appearance]="'compact'" (updated)="scrollBottom()" [autoHeightDisabled]="false" [track]="'vertical'" [visibility]="'native'" >
+                    <div class="chat-inner">
+                        <ul class="chat-list">
+                            <li class="index">
+                                <h2>Bem-vindo(a) a {{channel.name}}</h2>
+                                <span>Este é o inicio do canal <b>{{channel.name}}</b>.</span>
+                            </li>
+                           <div *ngFor="let message of messages; let i = index">
+                            <div class="row-date" *ngIf="i == 0 || (message.createdAt | date: 'dd MMMM yyyy') != (messages[i-1].createdAt | date: 'dd MMMM yyyy')">
+                                <div class="col-lg-12 d-flex flex-row align-items-center justify-content-center my-2">
+                                    <div class="date text-center">
+                                        {{ message.createdAt | date: "dd" }} de {{ message.createdAt | date: "MMMM" }} de {{ message.createdAt | date: "yyyy" }}
+                                    </div>
+                                </div>
+                            </div>
+                            <li class="chat-item "  [id]="'message-'+i" [ngClass]="{ 
+                                'isOwn': message.author._id == me.meSubject.value._id, 
+                                'slide-top':  message.animation,
+                                'recived': message.recived }">
+                                <div class="author" *ngIf="
+                                  i > 0 &&( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh:mm') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh:mm'))
+                                ">
+                                    <div class="author-wrapper">
+                                        <picture [ngStyle]="{'background-image': 'url('+message.author.icon+')'}"></picture>
+                                    </div>
+                                </div>
+                                <div class="baloon-wrapper">
+                                    <div class="author-info" *ngIf="
+                                    i > 0 &&( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh:mm') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh:mm'))
+                                    ">
+                                        <span class="name">{{ message.author.name }}</span>
+                                        <span class="datetime">{{ message.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                                    </div>
+                                    <div class="baloon">
+                                        <span>{{ message.content }}</span>
+                                    </div>
+                                </div>
+                            </li>
+                            
+                           </div>
+                          
+                        </ul>
+                    </div>
+                  </ng-scrollbar>
+               
+            </div>
+            <div class="chat-form">
+                <div class="text-form">
+                    <input type="text" [formControl]="content" (keypress)="sendMessageEnter($event)">
+                    <button (click)="sendMessage()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" heigt="24" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                          </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="guild-wrapper">
+            <list-members [guildId]="guildId"></list-members>
+        </div>
     </div>
 </div>

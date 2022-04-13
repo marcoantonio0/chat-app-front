@@ -34,4 +34,8 @@ export class GuildService {
       return guild;
     }))
   }
+
+  getMembers(guildId: string): Observable<any[]> {
+    return this.http.get<any[]>(environment.baseUrl+'/guild/'+guildId+'/members');
+  }
 }

@@ -1,3 +1,4 @@
+import { ElectronService } from './../../../_services/electron.service';
 import { Component, EventEmitter, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog'
 import { map } from 'rxjs';
@@ -16,6 +17,7 @@ export class FriendComponent implements OnInit {
   currentTab: 'ONLINE' | 'ALL' | 'PEDING' | 'BLOCKED' = 'ONLINE';
   changeTabEvent = new EventEmitter();
   constructor(
+    public electron: ElectronService,
     private _dialog: MatDialog,
     private user: UserService
   ) { }

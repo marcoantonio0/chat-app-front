@@ -3,23 +3,21 @@
     flex-direction: row;
     height: 100%;
     width: 100%;
+    z-index: 91;
     .side-me {
+        position: relative;
+        min-height: 100%;
         min-width: 280px;
-        padding: 10px;
         padding-bottom: 75px;
-        background-color: #181a1c;
-        position: fixed;
-        top: 0;
-        height: 100%;
-        z-index: 91;
+        background-color: #171a1c;
     }
 
 }
 
 .wrapper-content {
-    width: 100%;
-    padding-left: 280px;
+    
     height: 100%;
+    flex: 1 1 auto;
 }
 
 .list-menu {

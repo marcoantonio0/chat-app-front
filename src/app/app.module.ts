@@ -1,3 +1,5 @@
+import { SocketService } from './_services/socket.service';
+
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -12,12 +14,17 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog'
 import { NewGuildModule } from './components/new-guild/new-guild.module';
 import { MatMenuModule } from '@angular/material/menu';
+import localeBr from '@angular/common/locales/pt';
+import { registerLocaleData } from '@angular/common';
+import { MessageService } from './_services/message.service';
+registerLocaleData(localeBr, 'pt')
+
 
 @NgModule({
   declarations: [
     AppComponent,
     ContentComponent,
-    SidebarComponent
+    SidebarComponent,
   ],
   imports: [
     BrowserModule,
@@ -31,7 +38,9 @@ import { MatMenuModule } from '@angular/material/menu';
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-    { provide: LOCALE_ID, useValue: 'pt' }
+    { provide: LOCALE_ID, useValue: 'pt' },
+    SocketService,
+    MessageService
   ],
   bootstrap: [AppComponent]
 })

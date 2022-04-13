@@ -33,6 +33,7 @@
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
               "./node_modules/tippy.js/dist/tippy.css",
+              "./src/assets/styles/context-menu.scss",
               "src/styles.scss"
             ],
             "scripts": []

@@ -1,9 +1,15 @@
+import { MatDialogModule } from '@angular/material/dialog';
+import { NewChannelModule } from './../../components/new-channel/new-channel.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ChannelsRoutingModule } from './channels-routing.module';
 import { ChannelsComponent } from './channels.component';
-import { GuildMenuContextModule } from 'src/app/_directives/guild-menu-context/guild-menu-context.module';
+import { ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
+import { NgxTippyModule } from 'ngx-tippy-wrapper';
+import { NgScrollbarModule } from 'ngx-scrollbar';
+
+
 
 
 @NgModule({
@@ -12,7 +18,11 @@ import { GuildMenuContextModule } from 'src/app/_directives/guild-menu-context/g
   ],
   imports: [
     CommonModule,
-    GuildMenuContextModule,
+    ContextMenuModule,
+    NgxTippyModule,
+    NgScrollbarModule,
+    NewChannelModule,
+    MatDialogModule,
     ChannelsRoutingModule
   ]
 })

@@ -8,6 +8,7 @@ const routes: Routes = [
     { path: '@me', loadChildren: () => import('./pages/me/me.module').then(mod => mod.MeModule) }, 
     { path: 'channels', loadChildren: () => import('./pages/channels/channels.module').then(mod => mod.ChannelsModule) }, 
   ] },
+  { path: 'invite/:token', loadChildren: () => import('./pages/invite/invite.module').then(mod => mod.InviteModule) },
   { path: 'login', loadChildren: () => import('./pages/login/login.module').then(mod => mod.LoginModule) },
   { path: 'register', loadChildren: () => import('./pages/register/register.module').then(mod => mod.RegisterModule) },
 ];

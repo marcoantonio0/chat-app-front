@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
       this.isLoading = true;
       this.loginGroup.disable();
       this.auth.login(this.loginGroup.value.username, this.loginGroup.value.password).subscribe(r =>{
-        console.log(r);
+        this.router.navigate(['/@me']);
       }, e => {
         this.error = e.error.message;
         this.loginGroup.enable();

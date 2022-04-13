@@ -59,8 +59,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      width: 100vw;
+      height: 100%;
+      width: 100%;
   }
 
   .user-content {
@@ -98,6 +98,9 @@
         width: 35px;
         border-radius: 20%;
         display: block;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
         background-color: #3f4145;
       }
     }

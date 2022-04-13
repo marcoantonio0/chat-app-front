@@ -1,3 +1,4 @@
+import { ElectronService } from './../../_services/electron.service';
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 
@@ -9,7 +10,8 @@ import { NavigationEnd, Router } from '@angular/router';
 export class MeComponent implements OnInit {
   currentUrl = '';
   constructor(
-    private router: Router
+    private router: Router,
+    public electron: ElectronService
   ) {
     
     this.router.events.subscribe((val) => {

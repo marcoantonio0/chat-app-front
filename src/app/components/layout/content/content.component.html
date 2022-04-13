@@ -1,5 +1,5 @@
 <main *ngIf="!isLoading">
-    <nav class="sidenav">
+    <nav class="sidenav" >
         <app-sidebar></app-sidebar>
     </nav>
     <div class="content">
@@ -7,7 +7,7 @@
             <div class="user-wrapper">
                 <div class="user" > 
                     <div class="avatar" [matMenuTriggerFor]="menu">
-                        <picture class="avatar"></picture>
+                        <picture class="avatar" [ngStyle]="{'background-image':'url('+me.icon+')'}"></picture>
                         <span class="status" [ngClass]="{ 'ONLINE' : me.activity_status == 'ONLINE', 'OFFLINE' : me.activity_status == 'OFFLINE', 'BUZY' : me.activity_status == 'BUZY', 'AFK' : me.activity_status == 'AFK'  }"></span>
                     </div>
                     <div class="name-username">
