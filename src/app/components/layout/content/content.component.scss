@@ -66,17 +66,21 @@
   .user-content {
     display: flex;
     padding: 10px;
+    flex-direction: column;
     z-index: 99;
     min-width: 280px;
     position: fixed;
     bottom: 0;
     .user-wrapper {
+      display: flex;
+      flex-direction: row;
       width: 100%;
       border-radius: 5px;
       background-color: #27292d;
       padding: 10px;
     }
     .user {
+      flex: 1 auto;
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -103,6 +107,66 @@
         background-size: contain;
         background-color: #3f4145;
       }
+    }
+  }
+
+  .channel-info {
+    white-space: nowrap;
+    width: 100%;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+    font-size: 12px;
+    color: #c9c9c9;
+  }
+
+  .voice-state {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgb(70, 196, 110);
+    svg {
+      fill: rgb(70, 196, 110);
+      margin-right: 5px;
+    }
+  }
+
+  .channel-controls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    
+  }
+
+  .control-button {
+    height: 37px;
+    width: 37px;
+    border-radius: 5px;
+    appearance: none;
+    appearance: none;
+    border: none;
+    color: #c9c9c9;
+    cursor: pointer;
+    background-color: transparent;
+    &:hover {
+      background-color: #27292d;
+      color: #fff;
+    }
+    // svg {
+    //   font-size: 24px;
+    // }
+  }
+
+  .state-wrapper {
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: row;
+    .state-inner {
+      display: flex;
+      flex: 1 auto;
+      flex-direction: column;
     }
   }
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { AuthService } from 'src/app/_services/auth.service';
 import { UserService } from 'src/app/_services/user.service';
@@ -25,16 +25,20 @@ export class RegisterComponent implements OnInit {
     email: new FormControl('', [Validators.required, Validators.email]),
     birthday: new FormControl(''),
   })
+  returnUrl = '/';
   constructor(
     private title: Title,
     private sAuth: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
+    private auth: AuthService,
     private sUser: UserService
   ) {
     this.title.setTitle('Registrar no App')
     if(Object.keys(this.sAuth.currentUserValue).length > 0) { 
       this.router.navigate(['/']);
     }
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     let currentYear = new Date().getFullYear();
     let earliestYear = 1970;
 
@@ -44,7 +48,7 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  getError(control: AbstractControl){
+  getError(control: AbstractControl) {
     if(control.hasError('required')){
       return 'Este campo é obrigatório.'
     }
@@ -74,7 +78,11 @@ export class RegisterComponent implements OnInit {
       let value = this.registerGroup.getRawValue();
       value['birthday'] = new Date(this.year.value, parseInt(this.month.value)-1, this.day.value).toISOString();
       this.sUser.create(value).subscribe(r => {
-        console.log(r);
+        this.auth.login(this.registerGroup.value.email, this.registerGroup.value.password).subscribe(e =>{
+          this.router.navigate([this.returnUrl]);
+        }, e => {
+          this.router.navigate([this.returnUrl]);
+        })
       }, e => {
         this.error = e.error.message;
         this.enable();

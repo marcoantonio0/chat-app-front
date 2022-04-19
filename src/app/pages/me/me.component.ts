@@ -1,3 +1,4 @@
+import { Title } from '@angular/platform-browser';
 import { ChannelService } from 'src/app/_services/channel.service';
 import { ElectronService } from './../../_services/electron.service';
 import { Component, OnInit } from '@angular/core';
@@ -13,12 +14,12 @@ export class MeComponent implements OnInit {
   channels: any[] = [];
   constructor(
     private router: Router,
-    private channel: ChannelService,
+    private title: Title,
+    public channel: ChannelService,
     public electron: ElectronService
   ) {
-    this.router.events.subscribe((val) => {
-     
-    });
+    this.title.setTitle('Discorderino');
+    
   }
 
   urlContains(param: string){

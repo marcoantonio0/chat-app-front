@@ -1,52 +1,3 @@
-.container-login {
-    background-color: #161819;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: 1fr;
-    grid-column-gap: 0px;
-    grid-row-gap: 0px;
-    height: 100%;
-    color: #fff;
-    
-    .div1 { 
-        grid-area: 1 / 1 / 2 / 2;
-        height: 100%;
-        background-image: url('../../../assets/wfh_1.svg');
-        // background-color: #f9f5f4;
-        background-repeat: no-repeat;
-        background-position: center;
-     }
-    .div2 { 
-        grid-area: 1 / 2 / 2 / 3;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 0 1rem;
-     }
-
-}
-
-@media screen and (max-width: 1180px) {
-    .div1 {
-        display: none;
-    }
-    .div2 {
-        grid-area: 1 !important;
-    }
-    .container-login  {
-        grid-template-columns: repeat(1, 1fr);
-    }
-}
-
-h1 {
-    font-weight: 800;
-    font-size: 1.8rem;
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
 .login-box {
     min-width: 360px;
     width: 100%;
@@ -141,13 +92,6 @@ span {
     color: rgb(219, 235, 255);
 }
 
-
-a {
-    text-decoration: none;
-    color: #6a5fff;
-    font-weight: 600;
-}
-
 .error {
     display: flex;
     align-items: center;
@@ -157,4 +101,10 @@ a {
     svg {
         margin-right: 4px;
     }
+}
+
+a {
+    text-decoration: none;
+    color: #6a5fff;
+    font-weight: 600;
 }

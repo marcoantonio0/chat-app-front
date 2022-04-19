@@ -16,17 +16,18 @@ export class SocketService {
     this.statusSocket = new BehaviorSubject<any>('OFFLINE');
   }
 
-  socket = io(environment.baseUrl,{
-    auth: {
-      access_token: this.auth.currentUserValue.access_token
-    },
-    autoConnect: false,
-    reconnection: true
-  })
+
   
 
   connect() {
-    this.currentSocketConnection = this.socket.connect();
+    this.currentSocketConnection = io(environment.baseUrl,{
+      auth: {
+        access_token: this.auth.currentUserValue.access_token
+      },
+      autoConnect: false,
+      reconnection: true
+    });
+    this.currentSocketConnection.connect();
     this.currentSocketConnection.on('connect', () => {
       this.statusSocket.next('CONNECTED');
     })
@@ -37,7 +38,13 @@ export class SocketService {
       this.statusSocket.next('DISCONNECTED');
     })
     this.currentSocketConnection.on('connect_error', (e: any) => {
-      this.currentSocketConnection = this.socket.connect();
+      this.currentSocketConnection = io(environment.baseUrl,{
+        auth: {
+          access_token: this.auth.currentUserValue.access_token
+        },
+        autoConnect: false,
+        reconnection: true
+      });
     })
   }
 

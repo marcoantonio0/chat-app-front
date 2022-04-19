@@ -16,8 +16,11 @@ export class ListMembersComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.guild.getMembers(this.guildId).subscribe(members => this.members = members);
-    
+    this.guild.getMembers(this.guildId);
+    this.guild.guildMembers.subscribe(members => {
+      this.members = members.filter(x => x.guild_id == this.guildId)[0].members;
+      console.log(this.members);
+    })
   }
 
 }

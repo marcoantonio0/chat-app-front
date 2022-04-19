@@ -1,19 +1,108 @@
 .invite-container {
     display: flex;
-    flex: 1;
+    flex: 1 1 auto;
+    flex-direction: row;
     height: 100%;
     width: 100%;
     align-items: center;
     justify-content: center;
     padding: 15px;
+    align-content: stretch;
     .invite-wrapper {
-        max-width: 360px;
+
         width: 100%;
+    }
+    .invite-inner {
+        margin: auto;
+        max-width: 400px;
     }
     .invite-box {
         box-shadow: 0 5px 25px rgb(0 0 0 / 30%), 0 0px 6px rgb(0 0 0 / 50%);
-        padding: 1rem;
+        padding: 2rem;
         border-radius: 8px;
         background: #1c1e1f;
+        text-align: center;
+       
+        span.text {
+            font-size: 16px;
+            color: #9598ad;
+        }
     }
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    .wrapper-inner {
+        margin: auto;
+    }
+}
+
+.user-wrapper {
+    margin-bottom: 1.4rem;
+}
+
+.user-icon {
+    display: block;
+    margin: auto;
+    height: 60px;
+    width: 60px;
+    background-color: rgba(238, 238, 238, 0.103);
+    border-radius: 15%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.guild-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 1.5rem 0;
+    picture {
+        height: 45px;
+        border-radius: 15%;
+        width: 45px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-color: rgba(238, 238, 238, 0.103);
+        margin-right: 1rem;
+    }
+    .guild-name {
+        font-size: 18px !important;
+        color: #fff !important;
+        font-weight: 600;
+    }
+}
+
+.btn {
+    min-height: 45px;
+    text-align: center;
+    padding: 5px 15px;
+    width: 100%;
+    appearance: none;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    background-color: #6a5fff;
+    color: #fff ;
+}
+
+span.text-link {
+    font-size: 13px;
+    text-align: center;
+    display: block;
+    margin-top: 2rem;
+    cursor: pointer;
+    color: rgb(219, 235, 255);
+}
+
+
+a {
+    text-decoration: none;
+    color: #6a5fff;
+    font-weight: 600;
 }

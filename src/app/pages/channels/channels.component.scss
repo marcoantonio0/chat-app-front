@@ -81,6 +81,47 @@ ng-scrollbar {
     }
 }
 
+.list-connected {
+    margin: 0;
+    list-style: none;
+    padding-left: 20px;
+    .connected-item {
+        min-height: 38px;
+        border-radius: 5px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding-left: 38px;
+        color: #c9c9c9;
+        margin-bottom: 3px;
+        &:hover {
+            background-color: #26282c;
+            color: #fff;
+        }
+        .icon-wrapper {
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            picture {
+                height: 21px;
+                width: 21px;
+                border-radius: 15%;
+                background-color: #3a3a3a;
+            }
+        }
+        .name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+    }
+}
+
 
 
 .guild-info-wrapper {

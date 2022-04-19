@@ -1,3 +1,4 @@
+import { GuildService } from 'src/app/_services/guild.service';
 import { SocketService } from './_services/socket.service';
 
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -17,6 +18,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import localeBr from '@angular/common/locales/pt';
 import { registerLocaleData } from '@angular/common';
 import { MessageService } from './_services/message.service';
+import { UserService } from './_services/user.service';
+import { AudioService } from './_services/audio.service';
+import { MatIconModule } from '@angular/material/icon'
 registerLocaleData(localeBr, 'pt')
 
 
@@ -33,14 +37,18 @@ registerLocaleData(localeBr, 'pt')
     AppRoutingModule,
     MatMenuModule,
     MatDialogModule,
+    MatIconModule,
     NewGuildModule,
     BrowserAnimationsModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: LOCALE_ID, useValue: 'pt' },
+    UserService,
+    GuildService,
     SocketService,
-    MessageService
+    MessageService,
+    AudioService
   ],
   bootstrap: [AppComponent]
 })

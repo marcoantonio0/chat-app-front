@@ -1,11 +1,11 @@
-import { LoginComponentModule } from './../../components/login-component/login-component.module';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { InviteRoutingModule } from './invite-routing.module';
 import { InviteComponent } from './invite.component';
+
 
 
 @NgModule({
@@ -15,9 +15,10 @@ import { InviteComponent } from './invite.component';
   imports: [
     CommonModule,
     MatButtonModule,
-    LoginComponentModule,
+    ReactiveFormsModule,
     MatProgressSpinnerModule,
-    InviteRoutingModule
-  ]
+    MatDialogModule
+  ],
+  exports: [InviteComponent]
 })
 export class InviteModule { }

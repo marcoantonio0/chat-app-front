@@ -1,0 +1,20 @@
+<div class="dialog">
+    <button mat-icon-button  class="close" mat-dialog-close>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+    </button>
+    <div class="dialog-wrapper">
+        <h2>Convidar</h2>
+        <p>Copie o link abaixo e envie para seus amigos para fazerem parte do servidor.</p>
+        <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; padding: 1rem 0; margin-top: 1rem;" *ngIf="isLoading">
+            <mat-spinner diameter="21"></mat-spinner>
+        </div>
+        <div style="margin-top: 1rem;" *ngIf="!isLoading">
+            <div class="form-control">
+                <label for="">Envite o link para um amigo</label>
+                <input type="text" #focus [formControl]="link"  >
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,5 @@
 <div class="content-me">
-    <div class="side-me" >
+    <div class="side-me" [ngClass]="{'stateOn': channel.hasConnection }">
         <ng-scrollbar>
             <ul class="list-menu">
                 <li class="menu-item" [ngClass]="{'active': urlContains('') }" >

@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/_services/auth.service';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  selector: 'login',
+  templateUrl: './login-component.component.html',
+  styleUrls: ['./login-component.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponentComponent implements OnInit {
   isLoading = false;
   loginGroup = new FormGroup({
     username: new FormControl('', [Validators.required]),
@@ -17,20 +17,17 @@ export class LoginComponent implements OnInit {
   });
   error = '';
   returnUrl = '/';
+  @Output() loginEvent = new EventEmitter<any>();
   constructor(
     private title: Title,
     private route: ActivatedRoute,
     private auth: AuthService,
     private router: Router
   ) {
-    this.title.setTitle('Entrar no App');
-    if(Object.keys(this.auth.currentUserValue).length > 0) { 
-      this.router.navigate(['/']);
-    }
   }
 
   ngOnInit(): void {
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+   
   }
 
   login(){
@@ -39,7 +36,7 @@ export class LoginComponent implements OnInit {
       this.isLoading = true;
       this.loginGroup.disable();
       this.auth.login(this.loginGroup.value.username, this.loginGroup.value.password).subscribe(r =>{
-        this.router.navigate([this.returnUrl]);
+        this.loginEvent.emit(r);
       }, e => {
         this.error = e.error.message;
         this.loginGroup.enable();

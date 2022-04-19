@@ -1,9 +1,39 @@
 <div class="invite-container">
     <div class="invite-wrapper">
-        <div class="invite-box">
-            <picture>
-                
-            </picture>
+        <div class="invite-inner">
+            <div class="invite-box">
+                <div *ngIf="!isLoading && !hasError">
+                    <div class="user-wrapper">
+                        <picture class="user-icon" [ngStyle]="{'background-image':'url('+invite.inviter.icon+')'}"></picture>
+                    </div>
+                    <span class="text"><b>{{ invite.inviter.name }}</b> convidou você para se juntar</span>
+                    <div class="guild-wrapper">
+                        <picture [ngStyle]="{'background-image':'url('+invite.guild.icon+')'}"></picture>
+                        <span class="guild-name">{{ invite.guild.name }}</span>
+                    </div>
+                    <button mat-flat-button class="btn" [disabled]="disabled || isLoadingInvite" (click)="acceptInvite()">
+                        <div style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
+                            <span *ngIf="!isLoadingInvite">Aceitar convite</span>
+                            <mat-spinner diameter="24" *ngIf="isLoadingInvite"></mat-spinner>
+                        </div>
+                    </button>
+                </div>
+                <div *ngIf="isLoading" style="display: flex; align-items: center; justify-content: center;">
+                    <mat-spinner diameter="24"></mat-spinner>
+                </div>
+                <div *ngIf="!isLoading && hasError">
+                    <h2>Ops!</h2>
+                    <span class="text">Este convite expirou ou não existe.</span>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="wrapper" *ngIf="isNotAuth">
+        <div class="wrapper-inner">
+            <h2 style="margin-bottom: 1rem;">Faça login para continuar</h2>
+            <login></login>
+            <span class="text-link">Não possui uma conta? <a (click)="register()">Registre-se</a></span>
         </div>
     </div>
 </div>

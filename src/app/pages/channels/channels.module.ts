@@ -1,3 +1,4 @@
+import { InviteModule } from './../../components/invite/invite.module';
 import { MatDialogModule } from '@angular/material/dialog';
 import { NewChannelModule } from './../../components/new-channel/new-channel.module';
 import { NgModule } from '@angular/core';
@@ -20,6 +21,7 @@ import { ChannelComponentModule } from 'src/app/components/channel/channel.modul
     ContextMenuModule,
     NgxTippyModule,
     ChannelComponentModule,
+    InviteModule,
     NgScrollbarModule,
     NewChannelModule,
     MatDialogModule,

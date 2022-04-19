@@ -1,3 +1,4 @@
+import { ChannelService } from './../../_services/channel.service';
 import { SocketService } from './../../_services/socket.service';
 import { NewChannelComponent } from './../../components/new-channel/new-channel.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -5,6 +6,7 @@ import { ElectronService } from './../../_services/electron.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { GuildService } from 'src/app/_services/guild.service';
+import { InviteComponent } from 'src/app/components/invite/invite.component';
 
 @Component({
   selector: 'app-channels',
@@ -16,18 +18,15 @@ export class ChannelsComponent implements OnInit {
   channels: any[] = [];
   isLoading = true;
   guildId: string = '';
-  mediaRecorder!: MediaRecorder;
-  userStatus = {
-    microphone: true,
-    mute: false
-  };
+  mediaRecorder!: MediaRecorder;;
   constructor(
     private route: ActivatedRoute,
     public electron: ElectronService,
     private router: Router,
     private socket: SocketService,
     private _dialog: MatDialog,
-    private sGuild: GuildService
+    private sGuild: GuildService,
+    public channel: ChannelService
   ) {
 
     this.route.params.subscribe(params => {
@@ -38,11 +37,13 @@ export class ChannelsComponent implements OnInit {
         if(guild['channels'].length > 0 && guild['channels']?.filter((x:any) => x.is_home == true)?.length > 0) {
           channelHome = guild['channels']?.filter((x:any) => x.is_home == true)[0]._id;
         }
-        if(channelHome && this.router.url.split('/').length <= 3){
+        if(channelHome && this.router.url.split('/').length <= 3) {
           this.router.navigate(['/channels/'+guild._id+'/'+channelHome]);
         }
         this.guild = guild;
-        this.listChannels(guild.channels);
+        this.channel.channelsState.subscribe(channels => {
+          this.listChannels(channels.filter(x => x.guild == guild._id));
+        })
         this.isLoading = false;
       })
     })
@@ -75,7 +76,7 @@ export class ChannelsComponent implements OnInit {
   }
 
   joinChannel(channelId: string) { 
-
+    this.channel.connectAudioChannel(channelId);
   }
 
   newChannel(type: number, parent_id = '') {
@@ -83,6 +84,14 @@ export class ChannelsComponent implements OnInit {
       data: {
         type,
         parent_id,
+        guildId: this.guildId
+      }
+    })
+  }
+
+  newInvite(){
+    this._dialog.open(InviteComponent, {
+      data: {
         guildId: this.guildId
       }
     })
