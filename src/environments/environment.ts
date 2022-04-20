@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   baseUrl: 'https://26.228.3.2:3000',
-  peerServerHost: '26.228.3.2',
+  peerServerHost: '26.228.3.2:9000/peerjs',
   peerServerPort: 9000,
 };
 
