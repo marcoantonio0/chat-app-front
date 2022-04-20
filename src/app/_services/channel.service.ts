@@ -19,6 +19,7 @@ export class ChannelService {
   connectedState: BehaviorSubject<any>;
   join = new Audio('../../assets/audio/join.mp3');
   leave = new Audio('../../assets/audio/leave.mp3');
+
   constructor(
     private http: HttpClient,
     private socket: SocketService,
@@ -118,24 +119,18 @@ export class ChannelService {
       }
     }).then(stream => {
       this.http.post(environment.baseUrl+'/channel/'+channelId+'/audio', {}).subscribe(r => {
-
-        let speechEvents = hark(stream, {
-          threshold: -100
+        let cloned = stream.clone()
+        let speechEvents = hark(cloned, {
+          threshold: -84
         });
 
         speechEvents.on('speaking', () =>{
-          stream.getAudioTracks().forEach(e => {
-            
-          })
+          this.socket.currentSocketConnection?.emit('voice', { state: 1, channelId: this.connectedState.value.channel._id });
         })
 
         speechEvents.on('stopped_speaking', () =>{
-          stream.getAudioTracks().forEach(e => {
-            
-          })
+          this.socket.currentSocketConnection?.emit('voice', { state: 0, channelId: this.connectedState.value.channel._id });
         })
-
-        
 
         this.audio.currentStream.next(stream);
         this.connectVoicePeer();
@@ -154,8 +149,8 @@ export class ChannelService {
           });
 
           this.socket.currentSocketConnection?.on('new_user_channel', payload => {
-            this.updateConnectedChannel(payload.channelId, { user: payload.user, memberGuild: payload.memberGuild });
-            if(payload.channelId == this.connectedState.value.channel._id) {
+            this.updateConnectedChannel(payload.channel, payload);
+            if(payload.channel == this.connectedState.value.channel._id) {
               if(payload.user._id != this.me.meSubject.value._id) {
                 const call = this.getPeer?.call(payload.user._id, stream)
                
@@ -173,8 +168,7 @@ export class ChannelService {
           })
 
           this.socket.currentSocketConnection?.on('channel_leave', payload => {
-            if(payload.channelId == this.connectedState.value.channel._id) {
-              this.getPeer?.getConnection
+            if(payload.channel == this.connectedState.value.channel._id) {
               this.audio.removeAudio(payload.user._id);
               this.audioLeave();
             }
@@ -196,35 +190,58 @@ export class ChannelService {
     })
   }
 
-  leaveVoice(){
+  leaveVoice() {
+    this.audioLeave();
     this.getPeer?.destroy();
     this.socket.currentSocketConnection?.emit('left_channel', { channelId: this.connectedState.value.channel._id });
+    this.audio.voiceLeaveAll();
     this.connectedState.next({});
   }
 
 
   channelVoiceActivity(){
     this.socket.currentSocketConnection?.on('new_user_channel', payload => {
-      this.updateConnectedChannel(payload.channelId, { user: payload.user, memberGuild: payload.memberGuild });
+      this.updateConnectedChannel(payload.channel, payload);
     })
     this.socket.currentSocketConnection?.on('channel_leave', payload => {
-      this.updateConnectedChannel(payload.channelId, { user: payload.user, memberGuild: payload.memberGuild }, true);
+      this.updateConnectedChannel(payload.channel, payload, true);
+    })
+    this.socket.currentSocketConnection?.on('state_voice_activity', payload => {
+      this.updateConnectedChannel(payload.channel, payload);
+    })
+    this.socket.currentSocketConnection?.on('voice_state', payload => {
+      this.audio.voiceAudio(payload.userId, payload.state);
+      this.updateVoiceState(payload.channelId, payload.userId, payload.state);
     })
   }
 
-  updateConnectedChannel(channelId: string, member: any, leave = false) {
+  updateVoiceState(channelId: string, userId: string, state: 0 | 1) {
     let value = this.channelsState.value;
     let index = value.findIndex(x => x._id == channelId);
-    let hasMemberIndex = value[index].connected.findIndex((x:any) => x.user._id == member.user._id);
+    if(index >= 0){
+      let stateIndex = value[index].voiceStates.findIndex((x:any) => x.user._id == userId);
+      if(stateIndex != -1) {
+        console.log(value[index].voiceStates[stateIndex])
+        value[index].voiceStates[stateIndex]['state'] = state;
+        this.channelsState.next(value);
+        console.log(value[index].voiceStates[stateIndex],'apos')
+      }
+    }
+  }
+
+  updateConnectedChannel(channelId: string, voiceState: any, leave = false) {
+    let value = this.channelsState.value;
+    let index = value.findIndex(x => x._id == channelId);
+    let hasMemberIndex = value[index].voiceStates.findIndex((x:any) => x.user._id == voiceState.user._id);
     if(!leave){
       if(hasMemberIndex >= 0){
-        value[index].connected[hasMemberIndex] = member;
+        value[index].voiceStates[hasMemberIndex] = voiceState;
       } else {
-        value[index].connected.push(member);
+        value[index].voiceStates.push(voiceState);
       }
     } else {
       if(hasMemberIndex >= 0){
-        value[index].connected.splice(hasMemberIndex, 1);
+        value[index].voiceStates.splice(hasMemberIndex, 1);
       }
     }
     this.channelsState.next([ ...value ]);
@@ -241,6 +258,17 @@ export class ChannelService {
       debug: 1,
       path:'/audio'
     });
+  }
+
+  selfMute(status: boolean){
+    if(Object.keys(this.connectedState.value).length > 0){
+      this.socket.currentSocketConnection?.emit('self_mute', { self_mute: status, channelId: this.connectedState.value.channel._id });
+    }
+  }
+  selfDeaf(status: boolean){
+    if(Object.keys(this.connectedState.value).length > 0){
+      this.socket.currentSocketConnection?.emit('self_deaf', { self_deaf: status, channelId: this.connectedState.value.channel._id });
+    }
   }
   
 

@@ -93,12 +93,14 @@ ng-scrollbar {
         align-items: center;
         width: 100%;
         padding-left: 38px;
+        padding-right: 5px;
         color: #c9c9c9;
         margin-bottom: 3px;
         &:hover {
             background-color: #26282c;
             color: #fff;
         }
+
         .icon-wrapper {
             position: absolute;
             left: 10px;
@@ -108,16 +110,39 @@ ng-scrollbar {
             display: flex;
             align-items: center;
             justify-content: center;
-            picture {
+            figure {
                 height: 21px;
                 width: 21px;
                 border-radius: 15%;
                 background-color: #3a3a3a;
+                border: 2px solid transparent;
+            }
+        }
+        &.voice {
+            figure {
+                border-color: #6a5fff !important;
             }
         }
         .name {
             font-weight: 600;
             font-size: 14px;
+        }
+        .connected-inner {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .voiceActivity {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            color: #c9c9c9;
+            svg {
+                height: 18px;
+                width: 18px;
+            }
         }
     }
 }

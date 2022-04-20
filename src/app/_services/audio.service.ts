@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { ChannelService } from 'src/app/_services/channel.service';
+import { Injectable, Injector } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 
@@ -8,7 +9,6 @@ interface audioConfig {
   inputVolume: number;
   mode: string;
 }
-
 
 
 interface connectStream {
@@ -26,13 +26,12 @@ export class AudioService {
   MediaEngineStore: BehaviorSubject<audioConfig|any>;
   audioConnectedVoice: BehaviorSubject<connectStream[]>;
   currentStream: BehaviorSubject<MediaStream | undefined>;
-  constructor() {
+  constructor(
+    private injector: Injector
+  ) {
     this.MediaEngineStore = new BehaviorSubject(JSON.parse(localStorage.getItem(this.mediaLocalStorageName) || '{}'));
     this.audioConnectedVoice = new BehaviorSubject<connectStream[]>([]);
     this.currentStream = new BehaviorSubject<MediaStream|undefined>(undefined);
-    this.audioConnectedVoice.subscribe(e =>{
-      console.log(e);
-    })
     if(
       localStorage.getItem(this.mediaLocalStorageName) == undefined || 
       localStorage.getItem(this.mediaLocalStorageName) == null) {
@@ -40,17 +39,6 @@ export class AudioService {
     }
   }
 
-  getCurrentStream(){
-   
-    navigator.mediaDevices.getUserMedia({
-      audio: true
-    }).then(stream =>{
-      
-      this.currentStream.next(stream);
-    }).catch(err => {
-
-    })
-  }
 
   boostrapMediaEngine() {
     let data = {
@@ -76,6 +64,7 @@ export class AudioService {
       let audioValue = this.audioConnectedVoice.value;
       audio.srcObject = stream;
       audio.autoplay = true;
+      audio.muted = true;
       audio.play();
       audioValue.push({
         userId: userId,
@@ -100,6 +89,24 @@ export class AudioService {
     }
   }
 
+  voiceAudio(userId: string, state: 0 | 1) {
+    let audioValue = this.audioConnectedVoice.value;
+    let index = audioValue.findIndex(x => x.userId == userId);
+    if(index >= 0) {
+      if(state==0)audioValue[index].audio.muted = true;
+      if(state==1)audioValue[index].audio.muted = false;
+      this.audioConnectedVoice.next(audioValue);
+    }
+  }
+
+  voiceLeaveAll(){
+    let voices = this.audioConnectedVoice.value;
+    voices.forEach(voice =>{
+      voice.audio.remove();
+    })
+    this.audioConnectedVoice.next([]);
+  }
+
   mute(){
     let value = this.MediaEngineStore.value;
     this.currentStream.value?.getTracks().forEach(e =>{
@@ -110,14 +117,35 @@ export class AudioService {
     if(!value.mute){
       value.mute = true;
     } else value.mute = false;
+    const channel = this.injector.get<ChannelService>(ChannelService);
+    channel.selfMute(value.mute);
     this.MediaEngineStore.next(value);
   }
 
-  deaf(){
+  deaf() {
     let value = this.MediaEngineStore.value;
+    let voices = this.audioConnectedVoice.value;
+    this.currentStream.value?.getTracks().forEach(e =>{
+      if(e.kind == 'audio'){
+        e.enabled = !e.enabled;
+      } 
+    });
     if(!value.deaf){
+      value.muted = true;
+      voices.forEach(e =>{
+        e.audio.muted = true;
+      })
       value.deaf = true;
-    } else value.deaf = false;
+    } else {
+      voices.forEach(e =>{
+        e.audio.muted = false;
+      })
+      value.deaf = false;
+      value.muted = false;
+    }
+    const channel = this.injector.get<ChannelService>(ChannelService);
+    channel.selfDeaf(value.deaf);
+    channel.selfMute(value.muted);
     this.MediaEngineStore.next(value);
   }
 
