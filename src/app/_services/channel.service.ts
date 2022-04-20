@@ -255,7 +255,6 @@ export class ChannelService {
     this.currentPeer = new Peer(this.me.meSubject.value._id, {
       host: environment.peerServerHost,
       port: environment.peerServerPort,
-      secure: true,
       debug: 2,
       path:'/'
     });
