@@ -254,7 +254,12 @@ export class ChannelService {
   connectVoicePeer() {
     this.currentPeer = new Peer(this.me.meSubject.value._id, {
       host: environment.peerServerHost,
-      port: environment.peerServerPort,
+      secure: true,
+      config: {
+        iceServers: [{
+          urls: 'stun:stun.l.google.com:19302'
+        }, { urls: 'stun:global.stun.twilio.com:3478?transport=udp' }]
+      },
       debug: 2,
       path:'/'
     });
