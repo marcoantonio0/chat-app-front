@@ -257,7 +257,7 @@ export class ChannelService {
       port: environment.peerServerPort,
       secure: true,
       debug: 2,
-      path:'/peerjs/audio'
+      path:'/'
     });
   }
 
