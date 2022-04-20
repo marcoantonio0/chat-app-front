@@ -253,9 +253,10 @@ export class ChannelService {
 
   connectVoicePeer() {
     this.currentPeer = new Peer(this.me.meSubject.value._id, {
-      host: '26.228.3.2',
-      port: 9000,
-      debug: 1,
+      host: environment.peerServerHost,
+      port: environment.peerServerPort,
+      secure: true,
+      debug: 2,
       path:'/audio'
     });
   }
