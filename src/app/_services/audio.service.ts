@@ -119,7 +119,12 @@ export class AudioService {
     } else value.mute = false;
     const channel = this.injector.get<ChannelService>(ChannelService);
     channel.selfMute(value.mute);
-    this.MediaEngineStore.next(value);
+    this.updateMediaEngine(value);
+  }
+
+  updateMediaEngine(next: any){
+    this.MediaEngineStore.next(next);
+    localStorage.setItem(this.mediaLocalStorageName,JSON.stringify(this.MediaEngineStore.value));
   }
 
   deaf() {
@@ -146,7 +151,7 @@ export class AudioService {
     const channel = this.injector.get<ChannelService>(ChannelService);
     channel.selfDeaf(value.deaf);
     channel.selfMute(value.muted);
-    this.MediaEngineStore.next(value);
+    this.updateMediaEngine(value);
   }
 
   

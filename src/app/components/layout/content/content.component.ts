@@ -72,6 +72,7 @@ export class ContentComponent implements OnInit {
         this.guild.getGuildActivitys();
         this.user.getMembersActivity();
         this.channel.channelVoiceActivity();
+        this.channel.channelTextActivity();
       }
     })
   }

@@ -16,6 +16,7 @@ export class ChannelService {
   currentPeer: Peer | undefined;
   channelsState: BehaviorSubject<any[]>;
   channelsDMState: BehaviorSubject<any[]>;
+  typingState: BehaviorSubject<any[]>;
   connectedState: BehaviorSubject<any>;
   join = new Audio('../../assets/audio/join.mp3');
   leave = new Audio('../../assets/audio/leave.mp3');
@@ -30,6 +31,7 @@ export class ChannelService {
     this.channelsState = new BehaviorSubject<any[]>([]);
     this.connectedState = new BehaviorSubject<any>({});
     this.channelsDMState = new BehaviorSubject<any[]>([]);
+    this.typingState = new BehaviorSubject<any[]>([]);
   }
 
   create(guildId: string, data: any): Observable<any> {
@@ -198,6 +200,45 @@ export class ChannelService {
     this.connectedState.next({});
   }
 
+  channelTextActivity() {
+    this.socket.currentSocketConnection?.on('channel_typing', payload => {
+      this.addTypingState(payload);
+    })
+  }
+
+  addTypingState(state: any) {
+    let typingState = this.typingState.value;
+    if(typingState.findIndex((x: any) => x.channelId == state.channelId) <= -1) { 
+      typingState.push({
+        channelId: state.channelId,
+        states: []
+      })
+    }
+    let index = typingState.findIndex((x: any) => x.channelId == state.channelId);
+    if(typingState[index].states.findIndex((x:any) => x.user._id == state.user._id) <= -1) {
+      let timeRemove = setTimeout(() => {
+        let currentValue = this.typingState.value;
+        let indexState = currentValue[index].states.findIndex((x: any) => x.user_id == state.user._id);
+        currentValue[index].states.splice(indexState, 1);
+        this.typingState.next(currentValue);
+      }, 8000);
+
+      typingState[index].states.push({...state, timeRemove});
+    } else {
+      let indexState = typingState[index].states.findIndex((x:any) => x.user._id == state.user._id);
+      clearTimeout(typingState[index].states[indexState].timeRemove);
+      let timeRemove = setTimeout(() => {
+        let currentValue = this.typingState.value;
+        let indexState = currentValue[index].states.findIndex((x: any) => x.user_id == state.user._id);
+        currentValue[index].states.splice(indexState, 1);
+        this.typingState.next(currentValue);
+      }, 8000);
+
+      typingState[index].states[indexState] = {state, timeRemove};
+    }
+    this.typingState.next(typingState);
+  }
+
 
   channelVoiceActivity(){
     this.socket.currentSocketConnection?.on('new_user_channel', payload => {
@@ -254,11 +295,15 @@ export class ChannelService {
   connectVoicePeer() {
     this.currentPeer = new Peer(this.me.meSubject.value._id, {
       host: environment.peerServerHost,
-      port: 443,
+      port: environment.peerServerPort,
+      path: '/',
       secure: true,
       debug: 3,
-      path:'/'
     });
+  }
+
+  setTyping(channelId: string){
+    return this.http.post(environment.baseUrl+'/channel/'+channelId+'/typing', {});
   }
 
   selfMute(status: boolean){
@@ -271,6 +316,20 @@ export class ChannelService {
       this.socket.currentSocketConnection?.emit('self_deaf', { self_deaf: status, channelId: this.connectedState.value.channel._id });
     }
   }
+
+  removeSendedMessageTyping(message: any){
+    let typingValue = this.typingState.value;
+    let currentChannelTyping = typingValue.findIndex(x => x.channelId == message.channel_id);
+    console.log(currentChannelTyping);
+    if(currentChannelTyping >= 0){
+     let stateIndex =  typingValue[currentChannelTyping].states.findIndex((x: any) => x.user._id == message.author._id);
+     if(stateIndex >= 0){
+      clearTimeout(typingValue[currentChannelTyping].states[stateIndex].timeRemove);
+      typingValue[currentChannelTyping].states.splice(stateIndex);
+      this.typingState.next(typingValue);
+     }
+    }
+  }
   
 
   audioJoin(){
@@ -281,7 +340,7 @@ export class ChannelService {
     this.leave.play();
   }
 
-  sendMessage(channelId: string, data: any): Observable<any>{
+  sendMessage(channelId: string, data: any): Observable<any> {
     return this.http.post<any>(environment.baseUrl+'/channel/'+channelId+'/message', data);
   }
 }

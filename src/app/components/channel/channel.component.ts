@@ -29,9 +29,15 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
   isLoadingMore = false;
   lastScrollHeight = 0;
   scrollTo = '';
+  isLoading = false;
+  isFirst = true;
+  isTyping = false;
+  stopTiming: any;
   @ViewChild('scrollable', { static:true }) scroll !: NgScrollbar;
   messageObservable!: Subscription | null;
   messageStateObservable!: Subscription | null;
+  removeScrollObservable!: Subscription | null;
+  clearTypingState!: Subscription | null;
   constructor(
     private title: Title,
     public electron: ElectronService,
@@ -64,26 +70,25 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
       this.channel = this.sChannel.channelsDMState.value.filter(x => x._id == this.channelId)[0];
       this.title.setTitle(this.channel.recipients[0].name);
       this.getMessages(this.channelId || '');
+      this.getTypingState();
     } else {
       this.guild = this.sGuild.guilds.value.filter(x => x._id == this.guildId)[0];
       this.channel = this.sChannel.channelsState.value.filter(x => x._id == this.channelId)[0];
-      console.log(this.channel);
       this.title.setTitle(this.channel.name);
       this.getMessages(this.channelId || '');
+      this.getTypingState();
     }
     
     // this.channelId = paramsChannel['channelId'];
     // this.guildId = params['guildId'];
     // this.title.setTitle(this.channel.name);
     // Limpar os observadores e chama as mensagens
-   
   }
 
 
 
   ngAfterViewInit(): void {
     this.scroll.scrolled.subscribe((e:any) => {
-      
       this.sChannel.updateScrollTopChannel(this.channelId || '', e.target.scrollTop);
       if(e.target.scrollTop == this.scroll.viewport.scrollMaxY){
         this.autoScroll = true;
@@ -91,20 +96,41 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
         this.autoScroll = false;
       }
       
-     if (e.target.scrollTop <= 300 && !this.isLoadingMore) {
+     if (e.target.scrollTop <= 300 && !this.isLoadingMore && this.channel.first_message != this.messages[0]?._id) {
+      this.isFirst  = true;
       this.isLoadingMore = true;
-      this.scrollTo = this.messages[0]._id;
-      this.message.getMessagesBefore(this.channelId || '', this.messages[0]._id).subscribe(e =>{
+      this.scrollTo = this.messages[0]?._id;
+      this.message.getMessagesBefore(this.channelId || '', this.messages[0]?._id).subscribe(e =>{
          this.isLoadingMore = false;
-       })
+      })
      } 
     });
   }
 
-  sendMessageEnter(event: KeyboardEvent){
-    if(event.key == 'Enter' && !event.shiftKey){
+  getTypingState(){
+    this.typingUsers = [];
+    this.clearTypingState = this.sChannel.typingState.subscribe(states => {
+      let channelTypingStates = states.filter(x => x.channelId == this.channelId || '')[0];
+      if(channelTypingStates){
+        this.typingUsers = [...channelTypingStates?.states.filter((x: any) => x.user._id != this.me.meSubject.value._id)];
+      }
+    })
+  }
+
+  sendMessageEnter(event: KeyboardEvent) {
+    if(event.key == 'Enter' && !event.shiftKey) {
       this.sendMessage();
     }
+  }
+
+  typing() {
+    if(!this.isTyping){
+      this.isTyping = true;
+      this.sChannel.setTyping(this.channelId || '').subscribe(r => {});
+    }
+    this.stopTiming = setTimeout(() => {
+      this.isTyping = false;
+    }, 8000);
   }
 
   clearObservables(){
@@ -116,34 +142,47 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
       this.messageStateObservable.unsubscribe()
       this.messageStateObservable = null;
     }
+    if(this.clearTypingState){
+      this.clearTypingState.unsubscribe();
+      this.clearTypingState = null;
+    }
   }
 
+ 
 
+  
 
    getMessages(channelId: string) {
+    this.isFirst = true;
     this.messages = [];
     this.message.getMessages(this.channelId || '');
     
     this.messageObservable = this.message.messageState.subscribe(msg => {
-      if(msg.length > 0){
-        let messagesChannel = this.message.getMessagesByChannelId(channelId);
+      let messagesChannel = this.message.getMessagesByChannelId(channelId);
+      if(this.isFirst && messagesChannel.length > 0) {
         this.messages = [...messagesChannel];
-        this.messages.forEach(e => e['recived'] = true);
+        this.messages.forEach(e => {
+          e['recived'] = true
+          e['animation'] = true
+        });
+        
+
         if(this.scrollTo){
           this.scroll.scrollToElement('#message-'+this.messages.findIndex(x => x._id == this.scrollTo), { duration: 0 }).then(e =>{
             this.scrollTo = '';
           })
         }
-        let newMessage = messagesChannel[messagesChannel.length-1];
-        if(
-        this.messages.findIndex(x => x.nonce == newMessage.nonce) <= -1 &&
-        newMessage?.channel_id == channelId
-        ){
-          newMessage['recived'] = true;
-          newMessage['animation'] = true;
-          this.messages = [...this.messages, newMessage];
-       }
+        this.isFirst = false;
       }
+      let newMessage = messagesChannel[messagesChannel.length-1];
+      if(
+      this.messages.findIndex(x => x.nonce == newMessage.nonce) <= -1 &&
+      newMessage?.channel_id == channelId
+      ){
+        newMessage['recived'] = true;
+        newMessage['animation'] = true;
+        this.messages = [...this.messages, newMessage];
+     }
     })
   }
 
@@ -151,13 +190,13 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
     let names = '';
     this.typingUsers.forEach((e,i) =>{
       if(this.typingUsers.length == 1 || this.typingUsers.length == 0){
-        names += `<b>${e.name}</b>`;
+        names += `<b>${e.user.name}</b>`;
       }
       if(this.typingUsers.length > 1 && i == this.typingUsers.length-1){
-        names+=` e <b>${e.name}</b>`;
+        names+=` e <b>${e.user.name}</b>`;
       }
       if(this.typingUsers.length > 1 && i != this.typingUsers.length-1){
-        names+=`<b>${e.name}</b>${i != this.typingUsers.length-2 ? ',' : ''} `
+        names+=`<b>${e.user.name}</b>${i != this.typingUsers.length-2 ? ',' : ''} `
       }
     })
     if(this.typingUsers.length == 1) names+=' está digitando...';
@@ -173,10 +212,6 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  getLastMessage(i: number){
-    console.log( this.messages[i]);
-    return this.messages[i];
-  }
 
   sendMessage(){
     let nonce = uuidv4();
@@ -193,13 +228,11 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
       nonce,
       content: this.content.value
     }
+    this.sChannel.addChannelState(message);
     this.sChannel.sendMessage(this.channelId || '', messageData).subscribe(r => {
-      let index = this.messages.findIndex(x => x.nonce == r.nonce);
-      this.messages[index] = r;
-      this.messages[index]['recived'] = true;
+      this.isTyping = false;
+      this.sChannel.addChannelState(r);
     })
-
-    this.messages = [ ...this.messages, message ]
     this.content.reset();
   }
 

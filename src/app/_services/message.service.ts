@@ -1,3 +1,4 @@
+import { ChannelService } from 'src/app/_services/channel.service';
 import { HttpClient } from '@angular/common/http';
 import { SocketService } from './socket.service';
 import { Injectable } from '@angular/core';
@@ -11,7 +12,8 @@ export class MessageService {
   messageState: BehaviorSubject<any>;
   constructor(
     private http: HttpClient,
-    private socket: SocketService
+    private socket: SocketService,
+    private channel: ChannelService
   ) {
     this.messageState = new BehaviorSubject([]);
     this.socket.currentSocketConnection?.on('message', message => {
@@ -20,6 +22,8 @@ export class MessageService {
   }
 
   private addMessageState(message: any) {
+    this.channel.removeSendedMessageTyping(message);
+   
     let currentValue = this.messageState.getValue();
     if(currentValue.findIndex((x: any) => x.channel_id == message.channel_id) <= -1) {
       currentValue.push({
@@ -28,7 +32,12 @@ export class MessageService {
       })
     }
     const channelIndex = currentValue.findIndex((x: any) => x.channel_id == message.channel_id);
-    currentValue[channelIndex].messages = [...currentValue[channelIndex].messages, message ]
+    const messageIndex = currentValue[channelIndex].messages.findIndex((x: any) => x.nonce == message.nonce);
+    if(messageIndex <= -1) {
+      currentValue[channelIndex].messages = [...currentValue[channelIndex].messages, message ]
+    } else {
+      currentValue[channelIndex].messages[messageIndex] = message;
+    }
     this.messageState.next(currentValue);
   }
   
@@ -44,14 +53,22 @@ export class MessageService {
     }
     channelIndex = currentValue.findIndex((x: any) => x.channel_id == channelId);
     if(push) {
-      currentValue[channelIndex].messages = [ ...messages, ...currentValue[channelIndex].messages,  ];
+      messages.forEach(message => {
+        let index = currentValue[channelIndex].messages.findIndex((x: any) => x._id === message._id);
+        if(index == -1){
+          currentValue[channelIndex].messages = [ message, ...currentValue[channelIndex].messages,  ];
+        } else {
+          currentValue[channelIndex].messages[index] = message;
+        }
+      })
+      // currentValue[channelIndex].messages = [ ...messages, ...currentValue[channelIndex].messages,  ];
     } else {
       currentValue[channelIndex].messages = [ ...messages ];
     }
     this.messageState.next(currentValue);
   }
 
-  public getMessagesByChannelId(channelId: string){
+  public getMessagesByChannelId(channelId: string) {
     let currentValue = this.messageState.getValue();
     const channelIndex = currentValue.findIndex((x: any) => x.channel_id == channelId);
     if(channelIndex <= -1){
@@ -77,7 +94,9 @@ export class MessageService {
     let channelIndex = this.messageState.value.findIndex((x: any) => x.channel_id == channelId);
     if(channelIndex <= -1) {
       this.http.get<any[]>(environment.baseUrl+'/channel/'+channelId+'/message').subscribe(messages => {
-        this.addChannelMessages(channelId, messages);
+        if(messages[0]._id != channelId){
+          this.addChannelMessages(channelId, messages);
+        }
       })
     }
   }
