@@ -21,7 +21,7 @@ export class MessageService {
     })
   }
 
-  private addMessageState(message: any) {
+  addMessageState(message: any) {
     this.channel.removeSendedMessageTyping(message);
    
     let currentValue = this.messageState.getValue();
@@ -34,8 +34,10 @@ export class MessageService {
     const channelIndex = currentValue.findIndex((x: any) => x.channel_id == message.channel_id);
     const messageIndex = currentValue[channelIndex].messages.findIndex((x: any) => x.nonce == message.nonce);
     if(messageIndex <= -1) {
+      console.log('adicinou')
       currentValue[channelIndex].messages = [...currentValue[channelIndex].messages, message ]
     } else {
+      console.log('atualizou')
       currentValue[channelIndex].messages[messageIndex] = message;
     }
     this.messageState.next(currentValue);

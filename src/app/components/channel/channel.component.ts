@@ -220,7 +220,9 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
       author: this.me.meSubject.value,
       createdAt: new Date().toISOString(),
       nonce,
+      channel_id: this.channelId,
       animation: true,
+      type: 0,
       recived: false
     };
 
@@ -228,10 +230,10 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
       nonce,
       content: this.content.value
     }
-    this.sChannel.addChannelState(message);
+    this.message.addMessageState(message);
     this.sChannel.sendMessage(this.channelId || '', messageData).subscribe(r => {
       this.isTyping = false;
-      this.sChannel.addChannelState(r);
+      this.message.addMessageState(r);
     })
     this.content.reset();
   }
