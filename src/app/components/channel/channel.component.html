@@ -32,7 +32,7 @@
                                     'first-block': message.type == 0 && (i == 0 || ( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh'))),
                                     'same-block':  i > 0 &&( (message.author._id == messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') == (messages[i-1].createdAt | date: 'dd MMMM yyyy hh')),
                                     'recived': message.recived }">
-                                    <div *ngIf="message.type == 0">
+                                    <div *ngIf="message.type == 0" class="message-type">
                                         <div class="author" *ngIf="
                                             i == 0 || ( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh'))
                                         ">
@@ -52,7 +52,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div *ngIf="message.type == 2" style="padding: 10px 0;">
+                                    <div *ngIf="message.type == 2" style="padding: 10px 0;" class="message-type">
                                         <span><b>{{ message.author.name }}</b> acabou de entrar!</span>
                                     </div>
                                     <span class="time">{{ message.createdAt | date:'HH:mm' }}</span>

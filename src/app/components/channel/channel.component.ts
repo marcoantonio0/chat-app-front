@@ -179,9 +179,20 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
       this.messages.findIndex(x => x.nonce == newMessage.nonce) <= -1 &&
       newMessage?.channel_id == channelId
       ){
+        if(newMessage.author._id == this.me.meSubject.value._id && newMessage['recived'] == false){
+          newMessage['animation'] = true;
+        } else {
+          newMessage['recived'] = true;
+          newMessage['animation'] = true;
+        }
+        this.messages = [...this.messages, newMessage];
+     } else {
+       if( this.messages.findIndex(x => x.nonce == newMessage.nonce) >= 0 &&
+       newMessage?.channel_id == channelId) {
         newMessage['recived'] = true;
         newMessage['animation'] = true;
-        this.messages = [...this.messages, newMessage];
+        this.messages[this.messages.findIndex(x => x.nonce == newMessage.nonce)] = newMessage;
+       }
      }
     })
   }
@@ -214,28 +225,30 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
 
 
   sendMessage(){
-    let nonce = uuidv4();
-    let message = {
-      content: this.content.value,
-      author: this.me.meSubject.value,
-      createdAt: new Date().toISOString(),
-      nonce,
-      channel_id: this.channelId,
-      animation: true,
-      type: 0,
-      recived: false
-    };
-
-    let messageData = {
-      nonce,
-      content: this.content.value
+    if(this.content.value && this.content.value.length > 0){
+      let nonce = uuidv4();
+      let message = {
+        content: this.content.value,
+        author: this.me.meSubject.value,
+        createdAt: new Date().toISOString(),
+        nonce,
+        channel_id: this.channelId,
+        animation: true,
+        type: 0,
+        recived: false
+      };
+  
+      let messageData = {
+        nonce,
+        content: this.content.value
+      }
+      this.message.addMessageState(message);
+      this.sChannel.sendMessage(this.channelId || '', messageData).subscribe(r => {
+        this.isTyping = false;
+        this.message.addMessageState(r);
+      })
+      this.content.reset();
     }
-    this.message.addMessageState(message);
-    this.sChannel.sendMessage(this.channelId || '', messageData).subscribe(r => {
-      this.isTyping = false;
-      this.message.addMessageState(r);
-    })
-    this.content.reset();
   }
 
   ngOnInit(): void {

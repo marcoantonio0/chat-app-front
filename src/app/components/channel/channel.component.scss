@@ -176,7 +176,9 @@ ng-scrollbar {
     padding-right: 15px;
     padding-left: 60px;
     width: 100%;
-    opacity: .6;
+    .message-type {
+        opacity: .6;
+    }
     
     .time {
         position: absolute;
@@ -209,7 +211,9 @@ ng-scrollbar {
         background-color: rgba(238, 238, 238, 0.034);
     }
     &.recived {
-        opacity: 1;
+        .message-type {
+            opacity: 1;
+        }
     }
     &.isOwn {
         // flex-direction: row-reverse;
