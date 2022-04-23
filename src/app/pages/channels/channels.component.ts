@@ -34,8 +34,8 @@ export class ChannelsComponent implements OnInit {
       this.isLoading = true;
       this.sGuild.get(this.guildId).subscribe(guild => {
         let channelHome = null;
-        if(guild['channels'].length > 0 && guild['channels']?.filter((x:any) => x.is_home == true)?.length > 0) {
-          channelHome = guild['channels']?.filter((x:any) => x.is_home == true)[0]._id;
+        if(guild['channels'].length > 0) {
+          channelHome = guild['home_channel'];
         }
         if(channelHome && this.router.url.split('/').length <= 3) {
           this.router.navigate(['/channels/'+guild._id+'/'+channelHome]);

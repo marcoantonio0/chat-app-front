@@ -102,6 +102,24 @@ export class MessageService {
       })
     }
   }
+
+  public deleteMessage(message: any): Observable<any> {
+   return new Observable(subscriber => {
+      this.http.delete<any>(environment.baseUrl+'/channel/'+message._id+'/message').subscribe(r =>{
+        let value = this.messageState.value;
+        let channelIndex = value.findIndex((x: any) => x.channel_id == r.channel_id);
+        if(channelIndex >= 0) {
+          let messageIndex = value[channelIndex].messages.findIndex((x: any) => x._id == message._id);
+          if(messageIndex >= 0) {
+            value[channelIndex].messages.splice(messageIndex, 1);
+            subscriber.next(r);
+            this.messageState.next(value);
+            subscriber.complete();
+          }
+        }
+      });
+   })
+  }
   
 
 }

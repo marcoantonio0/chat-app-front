@@ -1,16 +1,18 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, AfterViewInit, NgZone, ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
-import { Subscription } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 import { ChannelService } from 'src/app/_services/channel.service';
 import { ElectronService } from 'src/app/_services/electron.service';
 import { GuildService } from 'src/app/_services/guild.service';
 import { MeService } from 'src/app/_services/me.service';
 import { MessageService } from 'src/app/_services/message.service';
 import { SocketService } from 'src/app/_services/socket.service';
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid';
+import {CdkTextareaAutosize} from '@angular/cdk/text-field';
+
 @Component({
   selector: 'channel',
   templateUrl: './channel.component.html',
@@ -38,6 +40,10 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
   messageStateObservable!: Subscription | null;
   removeScrollObservable!: Subscription | null;
   clearTypingState!: Subscription | null;
+  currentUser: any;
+  currentReplayState: any | null = null;
+  @ViewChild('autosize') autosize!: CdkTextareaAutosize;
+  @ViewChild('textArea') textArea!: ElementRef<HTMLTextAreaElement>;
   constructor(
     private title: Title,
     public electron: ElectronService,
@@ -45,24 +51,13 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
     private sChannel: ChannelService,
     public me: MeService,
     private message: MessageService,
+    private _ngZone: NgZone,
     private socket: SocketService,
     private route: ActivatedRoute
-  ) {
-    // this.route.parent?.parent?.params.subscribe(params =>{
-    //   this.route.params.subscribe(paramsChannel => {
-    //     this.channelId = paramsChannel['channelId'];
-    //     this.guildId = params['guildId'];
-    //     this.guild = this.sGuild.guilds.value.filter(x => x._id == this.guildId)[0];
-    //     this.channel = this.guild['channels'].filter((x:any) => x._id == this.channelId)[0];
-    //     this.title.setTitle(this.channel.name);
-    //     this.socket.joinGuildAndChannel(this.guildId, [this.channelId]);
-    //     // Limpar os observadores e chama as mensagens
-    //     this.clearObservables();
-    //     this.getMessages(this.channelId);
-    //   })
-     
-    // })
+  ) {    
+    this.currentUser = this.me.meSubject.value;
   }
+
   ngOnChanges(changes: SimpleChanges): void {
     this.clearObservables();
     this.socket.joinGuildAndChannel(this.guildId || '', [this.channelId || '']);
@@ -85,7 +80,11 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
     // Limpar os observadores e chama as mensagens
   }
 
-
+  triggerResize() {
+    this._ngZone.onStable.pipe(take(1)).subscribe(() => {
+      this.autosize.resizeToFitContent(true)
+    });
+  }
 
   ngAfterViewInit(): void {
     this.scroll.scrolled.subscribe((e:any) => {
@@ -119,6 +118,7 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
 
   sendMessageEnter(event: KeyboardEvent) {
     if(event.key == 'Enter' && !event.shiftKey) {
+      event.preventDefault();
       this.sendMessage();
     }
   }
@@ -190,7 +190,6 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
        if( this.messages.findIndex(x => x.nonce == newMessage.nonce) >= 0 &&
        newMessage?.channel_id == channelId) {
         newMessage['recived'] = true;
-        newMessage['animation'] = true;
         this.messages[this.messages.findIndex(x => x.nonce == newMessage.nonce)] = newMessage;
        }
      }
@@ -235,12 +234,18 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
         channel_id: this.channelId,
         animation: true,
         type: 0,
+        referenced_message: this.currentReplayState,
         recived: false
       };
+      
   
       let messageData = {
         nonce,
+        referenced_message: this.currentReplayState?._id,
         content: this.content.value
+      }
+      if(this.currentReplayState) {
+        this.currentReplayState = null;
       }
       this.message.addMessageState(message);
       this.sChannel.sendMessage(this.channelId || '', messageData).subscribe(r => {
@@ -253,6 +258,26 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
 
   ngOnInit(): void {
   
+  }
+
+  replayState(message: any) {
+    this.currentReplayState = message;
+    this.textArea.nativeElement.focus();
+  }
+
+  removeReplayState() {
+    this.currentReplayState = null;
+  }
+
+  scrollToReplayed(){
+    const index = this.messages.findIndex((x:any) => x._id == this.currentReplayState._id);
+    this.scroll.scrollToElement('#message-'+index);
+  }
+
+  deleteMessage(message: any, index: number) {
+    this.message.deleteMessage(message).subscribe(r =>{
+      this.messages.splice(index, 1);
+    })
   }
 
 }

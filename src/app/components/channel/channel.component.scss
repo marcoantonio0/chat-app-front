@@ -60,6 +60,7 @@
     -webkit-box-flex: 1;
     -ms-flex: 1 1 auto;
     flex: 1 1 auto;
+    position: relative;
     .chat-view {
         position: relative;
         -webkit-box-flex: 1;
@@ -75,11 +76,24 @@
         flex-shrink: 0;
         padding-left: 16px;
         padding-right: 16px;
+        padding-bottom: 37px;
         margin-top: -8px;
         min-height: 80px;
         max-height: 100%;
+        transition: all ease-in-out 120ms;
+        &.replayedState {
+            padding-top: 37px;
+            min-height: 117px;
+            transition: all ease-in-out 120ms;
+            .text-form {
+                border-radius: 0 0 8px 8px;
+            }
+        }
+        
     }
 }
+
+
 
 .text-form {
     display: flex;
@@ -88,7 +102,8 @@
     background-color: #27292e;
     padding: 8px 10px;
     border-radius: 8px;
-    input {
+    z-index: 2;
+    input, textarea {
         display: flex;
         height: 100%;
         width: 100%;
@@ -176,6 +191,77 @@ ng-scrollbar {
     padding-right: 15px;
     padding-left: 60px;
     width: 100%;
+    &:hover {
+        .message-options {
+            display: flex;
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+    &.replayState {
+        &:before {
+            content: '';
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background-color: #387aff !important;
+        }
+        background-color: #387aff21;
+    }
+    &.replayedNotification {
+        &:before {
+            content: '';
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background-color: #f39c12 !important;
+        }
+        background-color: #f39d1221;
+    }
+    .message-options {
+        flex-direction: row;
+        align-items: center;
+        background-color: #27292e;
+        border-radius: 5px;
+        border: 1px solid #3a3a3a;
+        position: absolute;
+        top: -10px;
+        min-height: 30px;
+        right: 20px;
+        padding: 0;
+        display: none;
+        opacity: 0;
+        visibility: hidden;
+        .message-option {
+            padding: 0;
+            height: 100%;
+            appearance: none;
+            background-color: transparent;
+            color: #fff;
+            opacity: .6;
+            border: none;
+            cursor: pointer;
+            height: 32px;
+            width: 32px;
+            svg {
+                height: 22px;
+                width: 22px;
+            }
+            &:hover {
+                background-color: rgba(238, 238, 238, 0.068);
+                opacity: 1;
+            }
+            &.delete {
+                color: #e74c3c;
+            }
+        }
+    }
     .message-type {
         opacity: .6;
     }
@@ -284,8 +370,17 @@ ng-scrollbar {
         width: fit-content;
         background-color: #27292e;
         user-select: text;
+       
     }
 }
+
+.markdown {
+    a {
+        color: #fff;
+    }
+}
+
+
 
 .row-date {
     width: 100%;
@@ -304,6 +399,17 @@ ng-scrollbar {
     font-size: 13px;
 }
 
+.chat-text-wrapper {
+    position: absolute;
+    bottom: 0;
+    min-height: 37px;
+    display: flex;
+    width: 100%;
+    left: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
   
 @keyframes blink { 50% { fill: transparent }}
 .dot { 
@@ -315,4 +421,80 @@ ng-scrollbar {
 
 .loader {
   color: grey;
+}
+
+.replayedMessage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0 16px;
+    z-index: 1;
+    .replay-wrapper {
+        background-color: #2e3137;
+        border-radius: 8px 8px 0 0;
+        padding: 5px 10px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        .replay-info {
+            cursor: pointer;
+        }
+    }
+    .replay-options {
+        button {
+            cursor: pointer;
+            height: 24px;
+            width: 24px;
+            padding: 0;
+            border-radius: 50%;
+            appearance: none;
+            border: none;
+            background-color: transparent;
+            opacity: .6;
+            color: #fff;
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+.message-replyed {
+    padding: 8px;
+    background-color: #202226;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    color: #9598ad;
+    display: flex;
+    flex-direction: row;
+    white-space: nowrap;
+    align-items: center;
+    cursor: pointer;
+    font-size: 13px;
+    &:hover {
+        color: #fff;
+    }
+    .replay-author {
+        display: flex;
+        align-items: center;
+        .name {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        picture {
+            margin-right: 5px;
+            height: 17px;
+            width: 17px;
+            border-radius: 10%;
+            background-color: #3a3a3a;
+        }
+    }
+    .replay-content {
+        white-space: nowrap;
+        max-width: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
 }

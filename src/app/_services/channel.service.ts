@@ -322,7 +322,7 @@ export class ChannelService {
     let currentChannelTyping = typingValue.findIndex(x => x.channelId == message.channel_id);
     console.log(currentChannelTyping);
     if(currentChannelTyping >= 0){
-     let stateIndex =  typingValue[currentChannelTyping].states.findIndex((x: any) => x.user._id == message.author._id);
+     let stateIndex =  typingValue[currentChannelTyping].states.findIndex((x: any) => x.user?._id == message.author?._id);
      if(stateIndex >= 0){
       clearTimeout(typingValue[currentChannelTyping].states[stateIndex].timeRemove);
       typingValue[currentChannelTyping].states.splice(stateIndex);

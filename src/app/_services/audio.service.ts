@@ -64,7 +64,6 @@ export class AudioService {
       let audioValue = this.audioConnectedVoice.value;
       audio.srcObject = stream;
       audio.autoplay = true;
-      audio.muted = true;
       audio.play();
       audioValue.push({
         userId: userId,
@@ -76,12 +75,11 @@ export class AudioService {
       audio.remove();
     }
   }
-
+ 
   removeAudio(userId: string) {
     let audioValue = this.audioConnectedVoice.value;
     let index = audioValue.findIndex(x => x.userId == userId);
     if(index >= 0) {
-      console.log(audioValue[index].audio);
       audioValue[index].audio.srcObject = null;
       audioValue[index].audio.remove();
       audioValue.splice(index, 1);
@@ -95,7 +93,6 @@ export class AudioService {
     if(index >= 0) {
       if(state==0)audioValue[index].audio.muted = true;
       if(state==1)audioValue[index].audio.muted = false;
-      this.audioConnectedVoice.next(audioValue);
     }
   }
 
@@ -136,7 +133,7 @@ export class AudioService {
       } 
     });
     if(!value.deaf){
-      value.muted = true;
+      value.mute = true;
       voices.forEach(e =>{
         e.audio.muted = true;
       })
@@ -146,7 +143,7 @@ export class AudioService {
         e.audio.muted = false;
       })
       value.deaf = false;
-      value.muted = false;
+      value.mute = false;
     }
     const channel = this.injector.get<ChannelService>(ChannelService);
     channel.selfDeaf(value.deaf);

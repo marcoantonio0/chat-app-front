@@ -696,6 +696,20 @@ nav {
     }
   }
 
+  markdown {
+    * {
+      white-space: pre-wrap;
+    }
+    a {
+      color: #fff;
+    }
+  }
+
   .stateOn {
     padding-bottom: 144px !important;
+  }
+
+  .simple-tooltip {
+    background-color: rgba(0, 0, 0, 0.800);
+    font-size: 14px;
   }
