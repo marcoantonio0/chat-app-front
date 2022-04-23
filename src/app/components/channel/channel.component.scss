@@ -473,8 +473,19 @@ ng-scrollbar {
     align-items: center;
     cursor: pointer;
     font-size: 13px;
+    position: relative;
+    overflow: hidden;
     &:hover {
         color: #fff;
+    }
+    &:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 2px;
+        background-color: #3879fe;
     }
     .replay-author {
         display: flex;
