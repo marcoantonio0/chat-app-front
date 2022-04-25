@@ -61,6 +61,7 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
   ngOnChanges(changes: SimpleChanges): void {
     this.clearObservables();
     this.socket.joinGuildAndChannel(this.guildId || '', [this.channelId || '']);
+    this.deleteMessageActivity();
     if(this.type == 'DM'){
       this.channel = this.sChannel.channelsDMState.value.filter(x => x._id == this.channelId)[0];
       this.title.setTitle(this.channel.recipients[0].name);
@@ -89,24 +90,24 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
   ngAfterViewInit(): void {
     this.scroll.scrolled.subscribe((e:any) => {
       this.sChannel.updateScrollTopChannel(this.channelId || '', e.target.scrollTop);
-      if(e.target.scrollTop == this.scroll.viewport.scrollMaxY){
+      if(e.target.scrollTop == this.scroll.viewport.scrollMaxY) {
         this.autoScroll = true;
       } else {
         this.autoScroll = false;
       }
-      
-     if (e.target.scrollTop <= 300 && !this.isLoadingMore && this.channel.first_message != this.messages[0]?._id) {
+      console.log(this.channel?.first_message[0]?._id != this.messages[0]?._id);
+     if (e.target.scrollTop <= 300 && !this.isLoadingMore && this.channel?.first_message[0]?._id != this.messages[0]?._id) {
       this.isFirst  = true;
       this.isLoadingMore = true;
       this.scrollTo = this.messages[0]?._id;
-      this.message.getMessagesBefore(this.channelId || '', this.messages[0]?._id).subscribe(e =>{
-         this.isLoadingMore = false;
+      this.message.getMessagesBefore(this.channelId || '', this.messages[0]?._id).subscribe(e => {
+        this.isLoadingMore = false;
       })
      } 
     });
   }
 
-  getTypingState(){
+  getTypingState() {
     this.typingUsers = [];
     this.clearTypingState = this.sChannel.typingState.subscribe(states => {
       let channelTypingStates = states.filter(x => x.channelId == this.channelId || '')[0];
@@ -160,6 +161,7 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
     this.messageObservable = this.message.messageState.subscribe(msg => {
       let messagesChannel = this.message.getMessagesByChannelId(channelId);
       if(this.isFirst && messagesChannel.length > 0) {
+        this.messages = [];
         this.messages = [...messagesChannel];
         this.messages.forEach(e => {
           e['recived'] = true
@@ -220,6 +222,16 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
     if(this.autoScroll){
       this.scroll.scrollTo({ bottom: 0, duration: 0 });
     }
+  }
+
+  deleteMessageActivity(){
+    this.socket.currentSocketConnection?.on('delete_message', message => {
+      console.log(this.messages.findIndex(x => x.nonce == message.nonce));
+      if(this.messages.findIndex(x => x.nonce == message.nonce) >= 0){
+        let index = this.messages.findIndex(x => x.nonce == message.nonce);
+        this.messages.splice(index, 1);
+      }
+    })
   }
 
 

@@ -19,6 +19,19 @@ export class MessageService {
     this.socket.currentSocketConnection?.on('message', message => {
      this.addMessageState(message);
     })
+    this.socket.currentSocketConnection?.on('delete_message', message => {
+      this.removeMessageState(message);
+    })
+  }
+
+  removeMessageState(message: any) {
+    let currentValue = this.messageState.getValue();
+    if(currentValue.findIndex((x: any) => x.channel_id == message.channel_id._id) >= 0) {
+      const channelIndex = currentValue.findIndex((x: any) => x.channel_id == message.channel_id._id);
+      const messageIndex = currentValue[channelIndex].messages.findIndex((x: any) => x.nonce == message.nonce);
+      currentValue[channelIndex].messages.splice(messageIndex, 1);
+      this.messageState.next(currentValue);
+    }
   }
 
   addMessageState(message: any) {
@@ -34,10 +47,8 @@ export class MessageService {
     const channelIndex = currentValue.findIndex((x: any) => x.channel_id == message.channel_id);
     const messageIndex = currentValue[channelIndex].messages.findIndex((x: any) => x.nonce == message.nonce);
     if(messageIndex <= -1) {
-      console.log('adicinou')
       currentValue[channelIndex].messages = [...currentValue[channelIndex].messages, message ]
     } else {
-      console.log('atualizou')
       currentValue[channelIndex].messages[messageIndex] = message;
     }
     this.messageState.next(currentValue);
@@ -96,27 +107,17 @@ export class MessageService {
     let channelIndex = this.messageState.value.findIndex((x: any) => x.channel_id == channelId);
     if(channelIndex <= -1) {
       this.http.get<any[]>(environment.baseUrl+'/channel/'+channelId+'/message').subscribe(messages => {
-        if(messages[0]._id != channelId){
-          this.addChannelMessages(channelId, messages);
-        }
+        this.addChannelMessages(channelId, messages);
       })
     }
   }
 
   public deleteMessage(message: any): Observable<any> {
    return new Observable(subscriber => {
-      this.http.delete<any>(environment.baseUrl+'/channel/'+message._id+'/message').subscribe(r =>{
-        let value = this.messageState.value;
-        let channelIndex = value.findIndex((x: any) => x.channel_id == r.channel_id);
-        if(channelIndex >= 0) {
-          let messageIndex = value[channelIndex].messages.findIndex((x: any) => x._id == message._id);
-          if(messageIndex >= 0) {
-            value[channelIndex].messages.splice(messageIndex, 1);
-            subscriber.next(r);
-            this.messageState.next(value);
-            subscriber.complete();
-          }
-        }
+      this.http.delete<any>(environment.baseUrl+'/channel/'+message._id+'/message').subscribe(message =>{
+        this.removeMessageState(message);
+        subscriber.next(message);
+        subscriber.complete();
       });
    })
   }

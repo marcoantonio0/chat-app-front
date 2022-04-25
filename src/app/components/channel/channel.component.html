@@ -14,7 +14,8 @@
                     <div class="chat-inner" 
                     >
                         <ul class="chat-list">
-                            <li class="index" *ngIf="type == 'CHANNEL'">
+                            
+                            <li class="index" *ngIf="type == 'CHANNEL' && channel.first_message && messages[0]._id == channel.first_message[0]._id">
                                 <h2>Bem-vindo(a) a {{channel.name}}</h2>
                                 <span>Este é o inicio do canal <b>{{channel.name}}</b>.</span>
                             </li>
@@ -29,14 +30,14 @@
                                 <li class="chat-item"  [id]="'message-'+i" [ngClass]="{ 
                                     'isOwn': message.author._id == me.meSubject.value._id, 
                                     'slide-top':  message.animation,
-                                    'first-block': message.type == 0 && (i == 0 || ( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh'))),
+                                    'first-block': message.type == 0 && (i == 0 || ( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh'))) || message.referenced_message,
                                     'same-block':  i > 0 &&( (message.author._id == messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') == (messages[i-1].createdAt | date: 'dd MMMM yyyy hh')),
                                     'recived': message.recived,
                                     'replayedNotification': message.author._id != this.currentUser._id && message.referenced_message && message.referenced_message.author._id == this.currentUser._id,
                                     'replayState': currentReplayState && currentReplayState?._id == message._id }">
                                     <div *ngIf="message.type == 0" class="message-type">
                                         <div class="author" *ngIf="
-                                            i == 0 || ( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh'))
+                                            i == 0 || ( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh')) || message.referenced_message
                                         ">
                                             <div class="author-wrapper">
                                                 <picture [ngStyle]="{'background-image': 'url('+message.author.icon+')'}"></picture>
@@ -44,7 +45,7 @@
                                         </div>
                                         <div class="baloon-wrapper">
                                             <div class="author-info" *ngIf="
-                                            i == 0 || ( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh'))
+                                            i == 0 || ( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh')) || message.referenced_message
                                             ">
                                                 <span class="name">{{ message.author.name }}</span>
                                                 <span class="datetime">{{ message.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
