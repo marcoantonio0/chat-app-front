@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { ChannelService } from './../../../../_services/channel.service';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { UserService } from 'src/app/_services/user.service';
 
 @Component({
@@ -8,7 +8,7 @@ import { UserService } from 'src/app/_services/user.service';
   templateUrl: './list-friend.component.html',
   styleUrls: ['./list-friend.component.scss']
 })
-export class ListFriendComponent implements OnInit {
+export class ListFriendComponent implements OnInit, OnChanges {
   @Input() users: any[] = [];
   @Input() type: 'LIST' | 'REQUEST' | 'BLOCKED' = 'LIST'; 
   constructor(
@@ -16,6 +16,19 @@ export class ListFriendComponent implements OnInit {
     private channel: ChannelService,
     private user: UserService
   ) { }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    let time = 20;
+    this.users.forEach(user => {
+      user['show'] = false;
+    })
+    this.users.forEach(user => {
+      time += 20;
+      setTimeout(() => {
+        user['show'] = true;
+      },time);
+    })
+  }
 
   ngOnInit(): void {
   }

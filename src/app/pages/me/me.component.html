@@ -28,7 +28,8 @@
                     <li class="dm-item" *ngFor="let channel of channels; let i = index;" [ngClass]="{'active': urlContains(channel._id) }">
                         <a [routerLink]="['/@me/channel/'+channel._id]" >
                             <div class="dm-icon-wrapper">
-                                <picture [ngStyle]="{'background-image': 'url('+channel.recipients[0].icon+')'}"></picture>
+                                <picture *ngIf="!channel.recipients[0].icon" style="background-image: url(https://eu.ui-avatars.com/api/?name={{channel.recipients[0].name | placeholderNameImage}}&size=250&background=a49eff)"></picture>
+                                <picture *ngIf="channel.recipients[0].icon" [ngStyle]="{'background-image': 'url('+channel.recipients[0].icon+')'}"></picture>
                                 <span class="status" [ngClass]="{ 'ONLINE' : channel.recipients[0].activity_status == 'ONLINE', 'OFFLINE' : channel.recipients[0].activity_status == 'OFFLINE', 'BUZY' : channel.recipients[0].activity_status == 'BUZY', 'AFK' : channel.recipients[0].activity_status == 'AFK'  }"></span>
                             </div>
                             <div class="dm-wrapper">

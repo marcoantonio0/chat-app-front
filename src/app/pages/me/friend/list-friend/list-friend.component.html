@@ -1,10 +1,11 @@
-<ul class="list-friends">
-    <div *ngFor="let user of users; let i = index" >
-      <li class="friend-item" *ngIf="type == 'LIST'" [contextMenu]="userContextMenu" [contextMenuValue]="user">
+<div>
+    <ul class="list-friends" *ngFor="let user of users; let i = index" >
+      <li class="friend-item" [ngClass]="{'show': user.show }" *ngIf="type == 'LIST'" [contextMenu]="userContextMenu" [contextMenuValue]="user">
         <div class="user" >
             <div class="icon">
                 <div class="icon-wrapper">
-                    <picture [ngStyle]="{'background-image': 'url('+user.icon+')'}" ></picture>
+                  <picture *ngIf="!user.icon" style="background-image: url(https://eu.ui-avatars.com/api/?name={{user.name | placeholderNameImage}}&size=250&background=a49eff)"></picture>
+                  <picture *ngIf="user.icon" [ngStyle]="{'background-image': 'url('+user.icon+')'}"></picture>
                     <span class="status" [ngClass]="{ 'ONLINE' : user.activity_status == 'ONLINE', 'OFFLINE' : user.activity_status == 'OFFLINE', 'BUZY' : user.activity_status == 'BUZY', 'AFK' : user.activity_status == 'AFK'  }"></span>
                 </div>
             </div>
@@ -34,11 +35,12 @@
             </button>
         </div>
       </li>
-      <li class="friend-item" *ngIf="type == 'REQUEST'">
+      <li class="friend-item" [ngClass]="{'show': user.show }" *ngIf="type == 'REQUEST'">
         <div class="user" >
             <div class="icon">
                 <div class="icon-wrapper">
-                    <picture></picture>
+                  <picture *ngIf="!user.icon" style="background-image: url(https://eu.ui-avatars.com/api/?name={{user.name | placeholderNameImage}}&size=250&background=a49eff)"></picture>
+                  <picture *ngIf="user.icon" [ngStyle]="{'background-image': 'url('+user.icon+')'}"></picture>
                 </div>
             </div>
             <div class="user-info-wrapper">
@@ -70,11 +72,12 @@
             </button>
         </div>
       </li>
-        <li class="friend-item" *ngIf="type == 'BLOCKED'">
+        <li class="friend-item" [ngClass]="{'show': user.show }" *ngIf="type == 'BLOCKED'">
         <div class="user" >
             <div class="icon">
                 <div class="icon-wrapper">
-                    <picture></picture>
+                    <picture *ngIf="!user.icon" style="background-image: url(https://eu.ui-avatars.com/api/?name={{user.name | placeholderNameImage}}&size=250&background=a49eff)"></picture>
+                    <picture *ngIf="user.icon" [ngStyle]="{'background-image': 'url('+user.icon+')'}"></picture>
                     <span class="status" [ngClass]="{ 'ONLINE' : user.activity_status == 'ONLINE', 'OFFLINE' : user.activity_status == 'OFFLINE', 'BUZY' : user.activity_status == 'BUZY', 'AFK' : user.activity_status == 'AFK'  }"></span>
                 </div>
             </div>
@@ -93,9 +96,8 @@
             </button>
         </div>
       </li>
-    </div>
-    
-</ul>
+    </ul>
+</div>
 
 <context-menu #userContextMenu>
    

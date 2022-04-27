@@ -4,8 +4,10 @@
             <li class="member-item"  *ngFor="let member of members; let i = index;">
                 <div class="member-wrapper">
                     <div class="member-icon">
-                        <picture *ngIf="!member.memberGuild.icon" [ngStyle]="{'background-image': 'url('+member.icon+')'}"></picture>
-                        <picture *ngIf="member.memberGuild.icon" [ngStyle]="{'background-image': 'url('+member.memberGuild.icon+')'}"></picture>
+                        
+                        <picture *ngIf="!member?.icon && member?.icon.length <= 0" style="background-image: url(https://eu.ui-avatars.com/api/?name={{member.name | placeholderNameImage}}&size=250&background=a49eff)"></picture>
+                        <picture *ngIf="member.icon" [ngStyle]="{'background-image': 'url('+member.icon+')'}"></picture>
+                        <!-- <picture *ngIf="member.memberGuild.icon" [ngStyle]="{'background-image': 'url('+member.memberGuild.icon+')'}"></picture> -->
                         <span class="status" [ngClass]="{ 'ONLINE' : member.activity_status == 'ONLINE', 'OFFLINE' : member.activity_status == 'OFFLINE', 'BUZY' : member.activity_status == 'BUZY', 'AFK' : member.activity_status == 'AFK'  }"></span>
                     </div>
                     <div class="member-info">

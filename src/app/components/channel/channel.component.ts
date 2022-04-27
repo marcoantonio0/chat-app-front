@@ -1,6 +1,6 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, AfterViewInit, NgZone, ElementRef } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, AfterViewInit, NgZone, ElementRef, Sanitizer, SecurityContext } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Title } from '@angular/platform-browser';
+import { Title, DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { Subscription, take } from 'rxjs';
@@ -12,6 +12,8 @@ import { MessageService } from 'src/app/_services/message.service';
 import { SocketService } from 'src/app/_services/socket.service';
 import { v4 as uuidv4 } from 'uuid';
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
+import * as sanitizeHtml from 'sanitize-html';
+import Twemoji from 'twemoji';
 
 @Component({
   selector: 'channel',
@@ -19,6 +21,20 @@ import {CdkTextareaAutosize} from '@angular/cdk/text-field';
   styleUrls: ['./channel.component.scss']
 })
 export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
+  rules = [
+    //bold, italics and paragragh rules
+    [/\*\*\s?([^\n]+)\*\*/g, "<b>$1</b>"],
+    [/\*\s?([^\n]+)\*/g, "<i>$1</i>"],
+    [/__([^_]+)__/g, "<b>$1</b>"],
+    [/_([^_`]+)_/g, "<i>$1</i>"],
+    [/([^\n]+\n?)/g, "<p>$1</p>"],
+    
+    //links
+    [
+      /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/,
+      '<a href="$2" target="_blank">$1</a>',
+    ],  
+  ];
   typingUsers: any[] = [];
   @Input() channelId?:  string  = '';
   @Input() guildId?:  string  = '';
@@ -35,6 +51,8 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
   isFirst = true;
   isTyping = false;
   stopTiming: any;
+  currentLast: any | null = null;
+  currentFirst: any | null = null;
   @ViewChild('scrollable', { static:true }) scroll !: NgScrollbar;
   messageObservable!: Subscription | null;
   messageStateObservable!: Subscription | null;
@@ -51,6 +69,7 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
     private sChannel: ChannelService,
     public me: MeService,
     private message: MessageService,
+    private sanitizer: DomSanitizer,
     private _ngZone: NgZone,
     private socket: SocketService,
     private route: ActivatedRoute
@@ -60,6 +79,7 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.clearObservables();
+    this.currentReplayState = null;
     this.socket.joinGuildAndChannel(this.guildId || '', [this.channelId || '']);
     this.deleteMessageActivity();
     if(this.type == 'DM'){
@@ -69,7 +89,9 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
       this.getTypingState();
     } else {
       this.guild = this.sGuild.guilds.value.filter(x => x._id == this.guildId)[0];
-      this.channel = this.sChannel.channelsState.value.filter(x => x._id == this.channelId)[0];
+      this.sChannel.channelsState.subscribe(channels => {
+        this.channel = this.sChannel.channelsState.value.filter(x => x._id == this.channelId)[0];
+      })
       this.title.setTitle(this.channel.name);
       this.getMessages(this.channelId || '');
       this.getTypingState();
@@ -89,21 +111,31 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.scroll.scrolled.subscribe((e:any) => {
-      this.sChannel.updateScrollTopChannel(this.channelId || '', e.target.scrollTop);
-      if(e.target.scrollTop == this.scroll.viewport.scrollMaxY) {
-        this.autoScroll = true;
-      } else {
+      // this.sChannel.updateScrollTopChannel(this.channelId || '', e.target.scrollTop);
+      if(e.target.scrollTop <= Math.floor((this.scroll.viewport.scrollMaxY * 95)/100)) {
         this.autoScroll = false;
+      } else {
+        this.autoScroll = true;
       }
-      console.log(this.channel?.first_message[0]?._id != this.messages[0]?._id);
-     if (e.target.scrollTop <= 300 && !this.isLoadingMore && this.channel?.first_message[0]?._id != this.messages[0]?._id) {
-      this.isFirst  = true;
-      this.isLoadingMore = true;
-      this.scrollTo = this.messages[0]?._id;
-      this.message.getMessagesBefore(this.channelId || '', this.messages[0]?._id).subscribe(e => {
-        this.isLoadingMore = false;
-      })
-     } 
+      
+      if (e.target.scrollTop <= 300 && !this.isLoadingMore && this.channel?.first_message[0]?._id != this.messages[0]?._id) {
+        this.isFirst  = true;
+        this.isLoadingMore = true;
+        this.scrollTo = this.messages[0]?._id;
+        this.message.getMessagesBefore(this.channelId || '', this.messages[0]?._id).subscribe(e => {
+          this.isLoadingMore = false;
+        })
+      }
+      let lastMessage = this.channel?.last_message[0];   
+ 
+      if (this.autoScroll != true && e.target.scrollTop >= Math.floor((this.scroll.viewport.scrollMaxY * 75)/100) && !this.isLoadingMore && lastMessage._id != this.messages[this.messages.length-1]?._id) {
+        this.isFirst  = true;
+        this.isLoadingMore = true;
+        this.scrollTo = this.messages[this.messages.length-1]?._id;
+        this.message.getMessagesAfter(this.channelId || '', this.messages[this.messages.length-1]?._id).subscribe(e => {
+          this.isLoadingMore = false;
+        })
+      } 
     });
   }
 
@@ -121,6 +153,24 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
     if(event.key == 'Enter' && !event.shiftKey) {
       event.preventDefault();
       this.sendMessage();
+    }
+  }
+
+  getAround(_id: string) {
+    this.isFirst = true;
+    if(this.messages.findIndex(x => x._id == _id) <= -1){
+      this.message.getMessagesAround(this.channelId || '', _id).subscribe(r => {
+        let index = this.messages.findIndex(x => x._id == _id);
+        let middle = (this.scroll.viewport.scrollMaxY / 2) - 200;
+        this.scroll.scrollTo({ top: middle, duration: 0 });
+        setTimeout(() => {
+          this.messages[index]['replay_show'] = true;
+        }, 500);
+      })
+    } else {
+      let index = this.messages.findIndex(x => x._id == _id);
+      this.scroll.scrollToElement('#message-'+index, { duration: 0 });
+      this.messages[index]['replay_show'] = true;
     }
   }
 
@@ -178,15 +228,15 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
       }
       let newMessage = messagesChannel[messagesChannel.length-1];
       if(
-      this.messages.findIndex(x => x.nonce == newMessage.nonce) <= -1 &&
-      newMessage?.channel_id == channelId
-      ){
-        if(newMessage.author._id == this.me.meSubject.value._id && newMessage['recived'] == false){
-          newMessage['animation'] = true;
-        } else {
-          newMessage['recived'] = true;
-          newMessage['animation'] = true;
-        }
+        this.messages.findIndex(x => x.nonce == newMessage.nonce) <= -1 &&
+        newMessage?.channel_id == channelId
+        ){
+          if(newMessage.author._id == this.me.meSubject.value._id && newMessage['recived'] == false){
+            newMessage['animation'] = true;
+          } else {
+            newMessage['recived'] = true;
+            newMessage['animation'] = true;
+          }
         this.messages = [...this.messages, newMessage];
      } else {
        if( this.messages.findIndex(x => x.nonce == newMessage.nonce) >= 0 &&
@@ -218,6 +268,26 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
     return names;
   }
 
+  appendMessage(message: any): string | null {
+    let html = message.content;
+    this.rules.forEach(([rule, template]) => {
+        html = html.replace(rule, template)
+    })
+    let sanitize = sanitizeHtml(html, { 
+      allowedTags: [
+        "b","strong","p","a","i",
+      ],
+      disallowedTagsMode: 'recursiveEscape',
+      enforceHtmlBoundary: true
+    });
+
+    return Twemoji.parse(sanitize, {
+      folder: 'svg',
+      ext: '.svg',
+      className:'emoji'
+    });
+  }
+
   scrollBottom(){
     if(this.autoScroll){
       this.scroll.scrollTo({ bottom: 0, duration: 0 });
@@ -226,7 +296,6 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
 
   deleteMessageActivity(){
     this.socket.currentSocketConnection?.on('delete_message', message => {
-      console.log(this.messages.findIndex(x => x.nonce == message.nonce));
       if(this.messages.findIndex(x => x.nonce == message.nonce) >= 0){
         let index = this.messages.findIndex(x => x.nonce == message.nonce);
         this.messages.splice(index, 1);
@@ -273,7 +342,11 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   replayState(message: any) {
+    this.currentReplayState = null;
     this.currentReplayState = message;
+    setTimeout(() => {
+      this.currentReplayState['show'] = true;
+    }, 5);
     this.textArea.nativeElement.focus();
   }
 

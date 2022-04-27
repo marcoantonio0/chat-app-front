@@ -49,6 +49,13 @@ export class ChannelService {
     }))
   }
 
+  updateLastMessage(channelId: string, message: any) {
+    let value = this.channelsState.value;
+    let channelIndex = value.findIndex(x => x._id == channelId);
+    value[channelIndex]['last_message'][0] = message;
+    this.channelsState.next(value);
+  }
+
   listDM(): Observable<any>{
     return new Observable(subscriber => {
       if(this.channelsDMState.value.length <= 0) {

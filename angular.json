@@ -38,12 +38,7 @@
               "./node_modules/prismjs/plugins/line-highlight/prism-line-highlight.css",
               "src/styles.scss"
             ],
-            "scripts": [
-              "node_modules/prismjs/prism.js",
-              "node_modules/prismjs/components/prism-javascript.min.js",
-              "node_modules/prismjs/components/prism-css.min.js",
-              "node_modules/prismjs/plugins/line-highlight/prism-line-highlight.js"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {

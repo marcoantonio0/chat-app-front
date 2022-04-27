@@ -1,3 +1,4 @@
+import { PlaceholderNameImageModule } from './../../_pipes/placeholder-name-image/placeholder-name-image.module';
 import { NgScrollbarModule } from 'ngx-scrollbar';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -13,6 +14,7 @@ import { MeComponent } from './me.component';
   ],
   imports: [
     CommonModule,
+    PlaceholderNameImageModule,
     NgScrollbarModule,
     MeRoutingModule
   ]

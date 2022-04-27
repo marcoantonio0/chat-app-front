@@ -15,7 +15,7 @@
                     >
                         <ul class="chat-list">
                             
-                            <li class="index" *ngIf="type == 'CHANNEL' && channel.first_message && messages[0]._id == channel.first_message[0]._id">
+                            <li class="index" *ngIf="type == 'CHANNEL' && channel.first_message && messages[0]?._id == channel.first_message[0]?._id">
                                 <h2>Bem-vindo(a) a {{channel.name}}</h2>
                                 <span>Este é o inicio do canal <b>{{channel.name}}</b>.</span>
                             </li>
@@ -34,13 +34,16 @@
                                     'same-block':  i > 0 &&( (message.author._id == messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') == (messages[i-1].createdAt | date: 'dd MMMM yyyy hh')),
                                     'recived': message.recived,
                                     'replayedNotification': message.author._id != this.currentUser._id && message.referenced_message && message.referenced_message.author._id == this.currentUser._id,
+                                    'replayedShow': message.replay_show,
                                     'replayState': currentReplayState && currentReplayState?._id == message._id }">
                                     <div *ngIf="message.type == 0" class="message-type">
                                         <div class="author" *ngIf="
                                             i == 0 || ( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh')) || message.referenced_message
                                         ">
                                             <div class="author-wrapper">
-                                                <picture [ngStyle]="{'background-image': 'url('+message.author.icon+')'}"></picture>
+                                                
+                                                <picture *ngIf="!message.author.icon" style="background-image: url(https://eu.ui-avatars.com/api/?name={{message.author.name | placeholderNameImage}}&size=250&background=a49eff)"></picture>
+                                                <picture *ngIf="message.author.icon" [ngStyle]="{'background-image': 'url('+message.author.icon+')'}"></picture>
                                             </div>
                                         </div>
                                         <div class="baloon-wrapper">
@@ -51,14 +54,13 @@
                                                 <span class="datetime">{{ message.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
                                             </div>
                                             <div class="baloon">
-                                                <div *ngIf="message.referenced_message" class="message-replyed">
+                                                <div *ngIf="message.referenced_message" class="message-replyed" (click)="getAround(message.referenced_message._id)">
                                                     <div class="replay-author">
-                                                        <picture></picture>
                                                         <span class="name">{{ message.referenced_message.author.name }}</span>
                                                     </div>
-                                                    <div class="replay-content">{{  message.referenced_message.content }}</div>
+                                                    <div [innerHTML]="appendMessage(message.referenced_message)"></div>
                                                 </div>
-                                                <markdown  ngPreserveWhitespaces  >{{ message.content }}</markdown>
+                                                <div [innerHTML]="appendMessage(message)" class="markdown"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -88,34 +90,40 @@
                   </ng-scrollbar>
                
             </div>
-            <div class="chat-form" [ngClass]="{ 'replayedState': currentReplayState != null}">
-                <div class="replayedMessage" *ngIf="currentReplayState">
-                    <div class="replay-wrapper">
-                        <div class="replay-info" (click)="scrollToReplayed()">
-                            <span>Responde mensagem de <b>{{ currentReplayState.author.name }}</b></span>
+            <div class="chat-form">
+                
+                <div class="text-form">
+                    <div class="replayedMessage" *ngIf="currentReplayState != null" [ngClass]="{'show': currentReplayState?.show}">
+                        <div class="replay-wrapper show" (click)="scrollToReplayed()">
+                            <div class="replay-info" >
+                                <span>Respondendo para <b>{{ currentReplayState.author.name }}</b></span>
+                                <markdown emoji [innerHTML]="currentReplayState.content"></markdown>
+                            </div>
+                            <div class="replay-options">
+                                <button class="close" type="button" (click)="removeReplayState()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                      </svg>
+                                </button>
+                            </div>
                         </div>
-                        <div class="replay-options">
-                            <button class="close" type="button" (click)="removeReplayState()">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </div>
+                    <div class="text-area-wrapper">
+                        <textarea type="text" [formControl]="content" (keypress)="sendMessageEnter($event)" (keypress)="typing()" 
+                        matInput
+                        cdkTextareaAutosize
+                        #autosize="cdkTextareaAutosize"
+                        #textArea
+                        [placeholder]="'Conversar sem #'+channel.name"
+                        cdkAutosizeMaxRows="5"></textarea>
+                        <div class="text-options">
+                            <button (click)="sendMessage()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" heigt="24" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                                   </svg>
                             </button>
                         </div>
                     </div>
-                </div>
-                <div class="text-form">
-                    <textarea type="text" [formControl]="content" (keypress)="sendMessageEnter($event)" (keypress)="typing()" 
-                    matInput
-                    cdkTextareaAutosize
-                    #autosize="cdkTextareaAutosize"
-                    #textArea
-                    [placeholder]="'Conversar sem #'+channel.name"
-                    cdkAutosizeMaxRows="5"></textarea>
-                    <button (click)="sendMessage()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" heigt="24" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                          </svg>
-                    </button>
                 </div>
                 <div class="chat-text-wrapper">
                     <div class="typing-wrapper" *ngIf="typingUsers.length > 0">

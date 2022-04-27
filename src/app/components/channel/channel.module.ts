@@ -9,6 +9,7 @@ import { ListMembersComponent } from './list-members/list-members.component';
 import { MarkedRenderer, MarkdownModule, MarkedOptions } from 'ngx-markdown';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {TextFieldModule} from '@angular/cdk/text-field';
+import { PlaceholderNameImageModule } from 'src/app/_pipes/placeholder-name-image/placeholder-name-image.module';
 
 export function markedOptionsFactory(): MarkedOptions {
   const renderer = new MarkedRenderer();
@@ -22,6 +23,27 @@ export function markedOptionsFactory(): MarkedOptions {
   renderer.listitem = (text: string) => {
     return text;
   };
+
+  renderer.image = (text: string) => {
+    return text;
+  }
+  renderer.table = (text: string) => {
+    return text;
+  }
+  renderer.tablecell = (text: string) => {
+    return text;
+  }
+  renderer.tablerow = (text: string) => {
+    return text;
+  }
+
+  renderer.text = (text: string) => {
+    let regex = /(^|[^@\w])@(\w{1,15})\b/g;
+    let textReplaced = text.replace(regex, '<span class="mention">@$2</span>');
+  
+    return textReplaced;
+  }
+
 
   renderer.link = (href: string, title: string) => {
     return `<a href="${href}" target="_blank">${title || href}</a>`;
@@ -44,6 +66,7 @@ export function markedOptionsFactory(): MarkedOptions {
   ],
   imports: [
     CommonModule,
+    PlaceholderNameImageModule,
     NgScrollbarModule,
     TextFieldModule,
     ReactiveFormsModule,

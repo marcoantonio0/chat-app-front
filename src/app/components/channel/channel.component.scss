@@ -85,9 +85,6 @@
             padding-top: 37px;
             min-height: 117px;
             transition: all ease-in-out 120ms;
-            .text-form {
-                border-radius: 0 0 8px 8px;
-            }
         }
         
     }
@@ -97,12 +94,19 @@
 
 .text-form {
     display: flex;
-    flex-direction: row;
     align-items: center;
     background-color: #27292e;
     padding: 8px 10px;
     border-radius: 8px;
     z-index: 2;
+    flex-direction: column;
+    .text-area-wrapper {
+        display: flex;
+        width: 100%;
+        flex-direction: row;
+        align-items: stretch;
+        flex: 1 auto;
+    }
     input, textarea {
         display: flex;
         height: 100%;
@@ -114,6 +118,7 @@
         outline: none;
         color: #fff;
         font-size: 15px;
+        min-height: 29px !important;
     }
 
     button {
@@ -200,16 +205,23 @@ ng-scrollbar {
     }
     &.replayState {
         &:before {
-            content: '';
-            height: 100%;
+            content: "";
             position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 2px;
-            background-color: #387aff !important;
+            left: 7px;
+            top: 50%;
+            bottom: 0;
+            transform: translate(0, -50%);
+            height: 70%;
+            border-radius: 5rem;
+            width: 3px;
+            background-color: #3879fe;
         }
-        background-color: #387aff21;
+        background-color: rgba(56, 122, 255, 0.129);
+    }
+    &.replayedShow {
+        animation: fade 1s forwards;
+        background-color: rgba(56, 122, 255, 0.129);
+        
     }
     &.replayedNotification {
         &:before {
@@ -424,23 +436,49 @@ ng-scrollbar {
 }
 
 .replayedMessage {
-    position: absolute;
-    top: 0;
-    left: 0;
+    height: auto;
     width: 100%;
-    padding: 0 16px;
-    z-index: 1;
+    height: 0;
+    cursor: pointer;
+    transition: all ease-in .140s;
+    overflow: hidden;
+    margin-bottom: 5px;
+    &.show {
+        height: 44px;
+    }
     .replay-wrapper {
-        background-color: #2e3137;
-        border-radius: 8px 8px 0 0;
+        &:before {
+            content: '';
+            height: 70%;
+            position: absolute;
+            left: 5px;
+            width: 3px;
+            background-color: #3879fe;
+            border-radius: 5rem;
+        }
+        position: relative;
+        padding: 0;
+        color: #9598ad;
         padding: 5px 10px;
+        padding-left: 15px;
+        overflow: hidden;
+        background-color: #202226;
+        border-radius: 8px;
         display: flex;
         flex-direction: row;
         align-items: center;
+        width: 100%;
         justify-content: space-between;
+        
         .replay-info {
-            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+           
         }
+        markdown {
+            white-space: nowrap;
+        }
+       
     }
     .replay-options {
         button {
@@ -461,8 +499,16 @@ ng-scrollbar {
     }
 }
 
+.text-options {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    height: 100%;
+}
+
 .message-replyed {
     padding: 8px;
+    padding-left: 15px;
     background-color: #202226;
     border-radius: 8px;
     margin-bottom: 5px;
@@ -479,12 +525,15 @@ ng-scrollbar {
         color: #fff;
     }
     &:before {
-        content: '';
+        content: "";
         position: absolute;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 2px;
+        left: 5px;
+        top: 50%;
+        bottom: 0;
+        transform: translate(0, -50%);
+        height: 70%;
+        border-radius: 5rem;
+        width: 3px;
         background-color: #3879fe;
     }
     .replay-author {
@@ -508,4 +557,8 @@ ng-scrollbar {
         text-overflow: ellipsis;
         overflow: hidden;
     }
+}
+@keyframes fade {
+    from { background-color:rgba(56, 122, 255, 0.129); }
+    to {background-color:rgba(56, 122, 255, 0);}
 }

@@ -696,14 +696,31 @@ nav {
     }
   }
 
-  markdown {
-    * {
-      white-space: pre-wrap;
+  .mention {
+    padding: 2px 3px;
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.048);
+    cursor: pointer;
+    border-radius: 4px;
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.226);
     }
+  }
+
+.chat-item {
+  .markdown {
     a {
       color: #fff;
     }
   }
+}
+
+.emoji {
+  height: 18px;
+   width: 18px;
+   margin: 0 .05em 0 .1em;
+   vertical-align: -0.1em;
+}
 
   .stateOn {
     padding-bottom: 144px !important;

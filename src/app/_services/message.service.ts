@@ -17,6 +17,7 @@ export class MessageService {
   ) {
     this.messageState = new BehaviorSubject([]);
     this.socket.currentSocketConnection?.on('message', message => {
+     this.channel.updateLastMessage(message.channel_id, message);
      this.addMessageState(message);
     })
     this.socket.currentSocketConnection?.on('delete_message', message => {
@@ -55,7 +56,7 @@ export class MessageService {
   }
   
 
-  public addChannelMessages(channelId: string, messages: any[], push = false): void {
+  public addChannelMessages(channelId: string, messages: any[], push = false, bottom = false): void {
     let currentValue = this.messageState.getValue();
     let channelIndex = -1;
     if(currentValue.findIndex((x: any) => x.channel_id == channelId) <= -1) {
@@ -66,14 +67,25 @@ export class MessageService {
     }
     channelIndex = currentValue.findIndex((x: any) => x.channel_id == channelId);
     if(push) {
-      messages.forEach(message => {
-        let index = currentValue[channelIndex].messages.findIndex((x: any) => x._id === message._id);
-        if(index == -1){
-          currentValue[channelIndex].messages = [ message, ...currentValue[channelIndex].messages,  ];
-        } else {
-          currentValue[channelIndex].messages[index] = message;
-        }
-      })
+      if(!bottom){
+        messages.forEach(message => {
+          let index = currentValue[channelIndex].messages.findIndex((x: any) => x._id === message._id);
+          if(index == -1){
+            currentValue[channelIndex].messages = [ message, ...currentValue[channelIndex].messages  ];
+          } else {
+            currentValue[channelIndex].messages[index] = message;
+          }
+        })
+      } else {
+          messages.forEach(message => {
+            let index = currentValue[channelIndex].messages.findIndex((x: any) => x._id === message._id);
+            if(index == -1) {
+              currentValue[channelIndex].messages = [ ...currentValue[channelIndex].messages, message ];
+            } else {
+              currentValue[channelIndex].messages[index] = message;
+            }
+          })
+      }
       // currentValue[channelIndex].messages = [ ...messages, ...currentValue[channelIndex].messages,  ];
     } else {
       currentValue[channelIndex].messages = [ ...messages ];
@@ -95,6 +107,26 @@ export class MessageService {
     return new Observable(subscribe => {
       this.http.get<any[]>(environment.baseUrl+'/channel/'+channelId+'/message', { params: { before } }).subscribe(messages => {
         this.addChannelMessages(channelId, messages, true);
+        subscribe.next(messages);
+        subscribe.complete();
+      })
+    })
+  }
+
+  public getMessagesAfter(channelId: string, after: string): Observable<any[]> {
+    return new Observable(subscribe => {
+      this.http.get<any[]>(environment.baseUrl+'/channel/'+channelId+'/message', { params: { after } }).subscribe(messages => {
+        this.addChannelMessages(channelId, messages, true, true);
+        subscribe.next(messages);
+        subscribe.complete();
+      })
+    })
+  }
+
+  public getMessagesAround(channelId: string, around: string): Observable<any[]> {
+    return new Observable(subscribe => {
+      this.http.get<any[]>(environment.baseUrl+'/channel/'+channelId+'/message', { params: { around } }).subscribe(messages => {
+        this.addChannelMessages(channelId, messages);
         subscribe.next(messages);
         subscribe.complete();
       })

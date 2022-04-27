@@ -19,7 +19,7 @@ export class RegisterComponent implements OnInit {
   year = new FormControl('', [Validators.required]);
   month = new FormControl('', [Validators.required]);
   registerGroup = new FormGroup({
-    username: new FormControl('', [Validators.required, Validators.maxLength(32)]),
+    username: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(15)]),
     name: new FormControl('', [Validators.required, Validators.maxLength(100)]),
     password: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -54,6 +54,14 @@ export class RegisterComponent implements OnInit {
     }
     if(control.hasError('email')){
       return 'Insira um e-mail válido.'
+    }
+    if(control.hasError('maxlength')){
+      let maxlength = control.getError('maxlength')['requiredLength'];
+      return `No máximo ${maxlength} caracteres.`;
+    }
+    if(control.hasError('minlength')){
+      let maxlength = control.getError('minlength')['requiredLength'];
+      return `No minímo ${maxlength} caracteres.`;
     }
     return '';
   }

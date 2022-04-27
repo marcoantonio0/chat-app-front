@@ -1,3 +1,4 @@
+import { PlaceholderNameImageModule } from './../../../_pipes/placeholder-name-image/placeholder-name-image.module';
 import { ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -21,6 +22,7 @@ import { NgxTippyModule } from 'ngx-tippy-wrapper';
     CommonModule,
     AddFriendModule,
     MatButtonModule,
+    PlaceholderNameImageModule,
     ContextMenuModule,
     MatDialogModule,
     MatRippleModule,

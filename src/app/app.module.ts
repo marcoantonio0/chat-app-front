@@ -1,3 +1,4 @@
+import { PlaceholderNameImageModule } from './_pipes/placeholder-name-image/placeholder-name-image.module';
 import { GuildService } from 'src/app/_services/guild.service';
 import { SocketService } from './_services/socket.service';
 
@@ -20,7 +21,8 @@ import { registerLocaleData } from '@angular/common';
 import { MessageService } from './_services/message.service';
 import { UserService } from './_services/user.service';
 import { AudioService } from './_services/audio.service';
-import { MatIconModule } from '@angular/material/icon'
+import { MatIconModule } from '@angular/material/icon';
+
 registerLocaleData(localeBr, 'pt')
 
 
@@ -28,7 +30,7 @@ registerLocaleData(localeBr, 'pt')
   declarations: [
     AppComponent,
     ContentComponent,
-    SidebarComponent,
+    SidebarComponent
   ],
   imports: [
     BrowserModule,
@@ -36,6 +38,7 @@ registerLocaleData(localeBr, 'pt')
     HttpClientModule,
     AppRoutingModule,
     MatMenuModule,
+    PlaceholderNameImageModule,
     MatDialogModule,
     MatIconModule,
     NewGuildModule,
