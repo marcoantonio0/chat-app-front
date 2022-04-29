@@ -27,16 +27,16 @@
                                     </div>
                                 </div>
                             </div>
-                                <li class="chat-item"  [id]="'message-'+i" [ngClass]="{ 
-                                    'isOwn': message.author._id == me.meSubject.value._id, 
-                                    'slide-top':  message.animation,
-                                    'first-block': message.type == 0 && (i == 0 || ( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh'))) || message.referenced_message,
-                                    'same-block':  i > 0 &&( (message.author._id == messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') == (messages[i-1].createdAt | date: 'dd MMMM yyyy hh')),
-                                    'recived': message.recived,
-                                    'replayedNotification': message.author._id != this.currentUser._id && message.referenced_message && message.referenced_message.author._id == this.currentUser._id,
-                                    'replayedShow': message.replay_show,
-                                    'replayState': currentReplayState && currentReplayState?._id == message._id }">
-                                    <div *ngIf="message.type == 0" class="message-type">
+                                <li class="chat-item-wrapper">
+                                    <div *ngIf="message.type == 0" class="chat-item"  [id]="'message-'+i" [ngClass]="{ 
+                                        'slide-top':  message.animation,
+                                        'first-block': message.type == 0 && (i == 0 || ( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh'))) || message.referenced_message,
+                                        'same-block':  i > 0 &&( (message.author._id == messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') == (messages[i-1].createdAt | date: 'dd MMMM yyyy hh')),
+                                        'recived': message.recived,
+                                        'replayedNotification': message.author._id != this.currentUser._id && message.referenced_message && message.referenced_message.author._id == this.currentUser._id,
+                                        'replayedShow': message.replay_show,
+                                        'error': message.error,
+                                        'replayState': currentReplayState && currentReplayState?._id == message._id }">
                                         <div class="author" *ngIf="
                                             i == 0 || ( (message.author._id != messages[i-1].author._id) || (message.createdAt | date: 'dd MMMM yyyy hh') != (messages[i-1].createdAt | date: 'dd MMMM yyyy hh')) || message.referenced_message
                                         ">
@@ -63,18 +63,37 @@
                                                 <div [innerHTML]="appendMessage(message) | safeHtml" class="markdown"></div>
                                             </div>
                                         </div>
+                                        <span class="time">{{ message.createdAt | date:'HH:mm' }}</span>
                                     </div>
-                                    <div *ngIf="message.type == 2" style="padding: 10px 0;" class="message-type">
+                                    <div *ngIf="message.type == 2" style="padding-top: 10px; padding-bottom: 10px;" class="chat-item">
                                         <span><b>{{ message.author.name }}</b> acabou de entrar!</span>
                                     </div>
-                                    <span class="time">{{ message.createdAt | date:'HH:mm' }}</span>
+                                    <div *ngIf="message.type == 99"  class="chat-item recived">
+                                        <div class="author">
+                                        <div class="author-wrapper">
+                                            <picture  style="background-image: url(../../../assets/bot.png)"></picture>
+                                        </div>
+                                    </div>
+                                        <div class="baloon-wrapper">
+                                            <div class="author-info" >
+                                                <span class="name">{{ message.author.name }}</span>
+                                                <span class="bot">BOT</span>
+                                                <span class="datetime">{{ message.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                                            </div>
+                                            <div class="baloon">
+                                                <div [innerHTML]="appendMessage(message) | safeHtml" class="markdown"></div>
+                                            </div>
+                                            <small class="only-you">Somente você pode visualizar esta mensagem</small>
+                                        </div>
+                                        <span class="time">{{ message.createdAt | date:'HH:mm' }}</span>
+                                    </div>
                                     <div class="message-options">
-                                        <button class="message-option" matTooltip="Responder"  [matTooltipPosition]="'above'" [matTooltipClass]="{'simple-tooltip': true}" (click)="replayState(message)">
+                                        <button class="message-option" matTooltip="Responder" *ngIf="message.type == 0 && !message.error" [matTooltipPosition]="'above'" [matTooltipClass]="{'simple-tooltip': true}" (click)="replayState(message)">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                                             </svg>
                                         </button>
-                                        <button class="message-option delete" *ngIf="message.author._id == currentUser._id" matTooltip="Excluir" [matTooltipPosition]="'above'" [matTooltipClass]="{'simple-tooltip': true}" 
+                                        <button class="message-option delete" *ngIf="(message.author._id == currentUser._id) || message.type == 99" matTooltip="Excluir" [matTooltipPosition]="'above'" [matTooltipClass]="{'simple-tooltip': true}" 
                                             (click)="deleteMessage(message, i)"
                                         >
                                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

@@ -27,10 +27,10 @@ export class MessageService {
 
   removeMessageState(message: any) {
     let currentValue = this.messageState.getValue();
-    if(currentValue.findIndex((x: any) => x.channel_id == message.channel_id._id) >= 0) {
-      const channelIndex = currentValue.findIndex((x: any) => x.channel_id == message.channel_id._id);
-      const messageIndex = currentValue[channelIndex].messages.findIndex((x: any) => x.nonce == message.nonce);
-      currentValue[channelIndex].messages.splice(messageIndex, 1);
+    let channelID = message.channel_id._id || message.channel_id;
+    if(currentValue.findIndex((x: any) => x.channel_id == channelID) >= 0) {
+      const channelIndex = currentValue.findIndex((x: any) => x.channel_id == channelID);
+      currentValue[channelIndex].messages = currentValue[channelIndex].messages.filter((x: any) => x.nonce != message.nonce);
       this.messageState.next(currentValue);
     }
   }
@@ -146,11 +146,20 @@ export class MessageService {
 
   public deleteMessage(message: any): Observable<any> {
    return new Observable(subscriber => {
-      this.http.delete<any>(environment.baseUrl+'/channel/'+message._id+'/message').subscribe(message =>{
-        this.removeMessageState(message);
-        subscriber.next(message);
-        subscriber.complete();
-      });
+      if(!message.error && message.type != 99){
+        this.http.delete<any>(environment.baseUrl+'/channel/'+message._id+'/message').subscribe(message =>{
+          this.removeMessageState(message);
+          subscriber.next(message);
+          subscriber.complete();
+        });
+      } else {
+        if(message.error == true || message.type == 99){
+          this.removeMessageState(message);
+          subscriber.next(message);
+          subscriber.complete();
+        }
+      }
+      
    })
   }
   

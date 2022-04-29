@@ -189,52 +189,21 @@ ng-scrollbar {
     }
 }
 
-.chat-item {
+.chat-item-wrapper {
+    position: relative;
     display: flex;
     flex-direction: row;
-    position: relative;
-    padding-right: 15px;
-    padding-left: 65px;
     width: 100%;
+    background-color: transparent;
+    &:hover {
+        background-color: rgba(238, 238, 238, 0.034);
+    }
     &:hover {
         .message-options {
             display: flex;
             opacity: 1;
             visibility: visible;
         }
-    }
-    &.replayState {
-        &:before {
-            content: "";
-            position: absolute;
-            left: 7px;
-            top: 50%;
-            bottom: 0;
-            transform: translate(0, -50%);
-            height: 70%;
-            border-radius: 5rem;
-            width: 3px;
-            background-color: #3879fe;
-        }
-        background-color: rgba(56, 122, 255, 0.129);
-    }
-    &.replayedShow {
-        animation: fade 1s forwards;
-        background-color: rgba(56, 122, 255, 0.129);
-        
-    }
-    &.replayedNotification {
-        &:before {
-            content: '';
-            height: 100%;
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 2px;
-            background-color: #f39c12 !important;
-        }
-        background-color: #f39d1221;
     }
     .message-options {
         flex-direction: row;
@@ -274,8 +243,58 @@ ng-scrollbar {
             }
         }
     }
+}
+
+.chat-item {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    padding-right: 15px;
+    padding-left: 65px;
+    width: 100%;
+
+    
+
+    &.error {
+        background: #e74c3c1c;
+        color: #e74c3c;
+    }
+    &.replayState {
+        &:before {
+            content: "";
+            position: absolute;
+            left: 7px;
+            top: 50%;
+            bottom: 0;
+            transform: translate(0, -50%);
+            height: 70%;
+            border-radius: 5rem;
+            width: 3px;
+            background-color: #3879fe;
+        }
+        background-color: rgba(56, 122, 255, 0.129);
+    }
+    &.replayedShow {
+        animation: fade 1s forwards;
+        background-color: rgba(56, 122, 255, 0.129);
+        
+    }
+    &.replayedNotification {
+        &:before {
+            content: '';
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background-color: #f39c12 !important;
+        }
+        background-color: #f39d1221;
+    }
+
     .message-type {
-        opacity: .6;
+        opacity: .6; 
     }
     
     .time {
@@ -305,11 +324,13 @@ ng-scrollbar {
         }
     }
 
-    &:hover {
-        background-color: rgba(238, 238, 238, 0.034);
+
+    .message-type {
+        max-width: 100%;
+        min-width: 100%;
     }
     &.recived {
-        .message-type {
+        .baloon {
             opacity: 1;
         }
     }
@@ -330,10 +351,6 @@ ng-scrollbar {
         // .baloon-wrapper  {
         //     flex-wrap: wrap-reverse;
         // }
-        .baloon {
-            // border-radius: 20px 0 20px 20px;
-            background-color: #387aff;
-        }
     }
     .baloon-wrapper {
         display: flex;
@@ -382,7 +399,7 @@ ng-scrollbar {
         width: fit-content;
         background-color: #27292e;
         user-select: text;
-       
+        opacity: .6;
     }
 }
 
@@ -561,4 +578,18 @@ ng-scrollbar {
 @keyframes fade {
     from { background-color:rgba(56, 122, 255, 0.129); }
     to {background-color:rgba(56, 122, 255, 0);}
+}
+.bot {
+    background-color: #6a5fff;
+    color: #fff;
+    font-size: 11px;
+    padding: 1px 4px;
+    font-weight: 600;
+    border-radius: 5px;
+    margin-left: 5px;
+}
+
+.only-you {
+    color: #9598ad;
+    margin-top: 5px;
 }

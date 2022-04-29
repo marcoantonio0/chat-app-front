@@ -298,6 +298,13 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
       className:'emoji'
     });
 
+    if(sanitize.match(/@(everyone|here|todos)/g) != null){
+      let matches = sanitize.match(/@(everyone|here|todos)/g);
+      matches?.forEach(match => {
+        sanitize = sanitize.replace(match, `<span class="mention">${match}</span>`)
+      });
+    }
+
     if(message.mentions.length > 0){
       message.mentions.forEach((user: any) => {
         sanitize = sanitize.replace('&lt;@!'+user._id+'&gt;', `<span class="mention" mention="${user._id}">@${user.name}</span>`)
@@ -315,10 +322,7 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
 
   deleteMessageActivity(){
     this.socket.currentSocketConnection?.on('delete_message', message => {
-      if(this.messages.findIndex(x => x.nonce == message.nonce) >= 0){
-        let index = this.messages.findIndex(x => x.nonce == message.nonce);
-        this.messages.splice(index, 1);
-      }
+      this.messages = this.messages.filter(x => x.nonce != message.nonce);
     })
   }
 
@@ -363,6 +367,26 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
       this.sChannel.sendMessage(this.channelId || '', messageData).subscribe(r => {
         this.isTyping = false;
         this.message.addMessageState(r);
+      }, e => {
+       let messageIndex = this.messages.findIndex(x => x.nonce == message.nonce);
+       this.messages[messageIndex]['error'] = true;
+       this.messages[messageIndex]['recived'] = true;
+       this.message.addMessageState(this.messages[messageIndex]);
+       let messageError: any = {
+        content: e.error.message || 'Houve um erro ao enviar mensagem.',
+        author: {
+          name: 'Lynx',
+          bot: true
+        },
+        createdAt: new Date().toISOString(),
+        nonce: uuidv4(),
+        channel_id: this.channelId,
+        animation: false,
+        type: 99,
+        mentions: [],
+        recived: true
+      };
+      this.message.addMessageState(messageError);
       })
       this.content.reset();
     }
@@ -392,7 +416,7 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
 
   deleteMessage(message: any, index: number) {
     this.message.deleteMessage(message).subscribe(r =>{
-      this.messages.slice(index, 1);
+      this.messages = this.messages.filter(x => x.nonce != r.nonce);
     })
   }
 
