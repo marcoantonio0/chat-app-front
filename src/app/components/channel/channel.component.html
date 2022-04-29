@@ -58,9 +58,9 @@
                                                     <div class="replay-author">
                                                         <span class="name">{{ message.referenced_message.author.name }}</span>
                                                     </div>
-                                                    <div [innerHTML]="appendMessage(message.referenced_message)"></div>
+                                                    <div [innerHTML]="appendMessage(message.referenced_message) | safeHtml"></div>
                                                 </div>
-                                                <div [innerHTML]="appendMessage(message)" class="markdown"></div>
+                                                <div [innerHTML]="appendMessage(message) | safeHtml" class="markdown"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -97,7 +97,7 @@
                         <div class="replay-wrapper show" (click)="scrollToReplayed()">
                             <div class="replay-info" >
                                 <span>Respondendo para <b>{{ currentReplayState.author.name }}</b></span>
-                                <markdown emoji [innerHTML]="currentReplayState.content"></markdown>
+                                <div [innerHTML]="appendMessage(currentReplayState) | safeHtml"></div>
                             </div>
                             <div class="replay-options">
                                 <button class="close" type="button" (click)="removeReplayState()">
@@ -114,7 +114,7 @@
                         cdkTextareaAutosize
                         #autosize="cdkTextareaAutosize"
                         #textArea
-                        [placeholder]="'Conversar sem #'+channel.name"
+                        [placeholder]="'Conversar em #'+channel.name"
                         cdkAutosizeMaxRows="5"></textarea>
                         <div class="text-options">
                             <button (click)="sendMessage()">

@@ -50,6 +50,7 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
   isLoading = false;
   isFirst = true;
   isTyping = false;
+  mentionsRegex = new RegExp(/<@!?(\d{17,19})>/g, 'gi');
   stopTiming: any;
   currentLast: any | null = null;
   currentFirst: any | null = null;
@@ -171,6 +172,10 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
       let index = this.messages.findIndex(x => x._id == _id);
       this.scroll.scrollToElement('#message-'+index, { duration: 0 });
       this.messages[index]['replay_show'] = true;
+      setTimeout(() => {
+        this.messages[index]['animation'] = false;
+        this.messages[index]['replay_show'] = false;
+      }, 500);
     }
   }
 
@@ -268,24 +273,36 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
     return names;
   }
 
-  appendMessage(message: any): string | null {
+  appendMessage(message: any): string {
     let html = message.content;
     this.rules.forEach(([rule, template]) => {
         html = html.replace(rule, template)
-    })
+      })
+    
+    
     let sanitize = sanitizeHtml(html, { 
       allowedTags: [
-        "b","strong","p","a","i",
+        "b","strong","p","a","i"
       ],
       disallowedTagsMode: 'recursiveEscape',
       enforceHtmlBoundary: true
     });
+    
+   
 
-    return Twemoji.parse(sanitize, {
+    sanitize = Twemoji.parse(sanitize, {
       folder: 'svg',
       ext: '.svg',
       className:'emoji'
     });
+
+    if(message.mentions.length > 0){
+      message.mentions.forEach((user: any) => {
+        sanitize = sanitize.replace('&lt;@!'+user._id+'&gt;', `<span class="mention" mention="${user._id}">@${user.name}</span>`)
+      })
+    }
+
+    return sanitize;
   }
 
   scrollBottom(){
@@ -307,7 +324,7 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
   sendMessage(){
     if(this.content.value && this.content.value.length > 0){
       let nonce = uuidv4();
-      let message = {
+      let message: any = {
         content: this.content.value,
         author: this.me.meSubject.value,
         createdAt: new Date().toISOString(),
@@ -315,9 +332,21 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
         channel_id: this.channelId,
         animation: true,
         type: 0,
+        mentions: [],
         referenced_message: this.currentReplayState,
         recived: false
       };
+
+      if(this.content.value.match(this.mentionsRegex).length >= 0){
+        let mentions = this.content.value.match(this.mentionsRegex);
+        mentions.forEach((mention: string) => {
+          let id = mention.replace(/[^0-9]+/g, '');
+          if(message.mentions.findIndex((x: any)=> x._id == id) <= -1) {
+            let guild = this.sGuild.guildMembers.value.filter((x:any) => x.guild_id == this.guildId)[0];
+            message.mentions.push(guild.members.filter((x: any) => x._id == id)[0]);
+          }
+        });
+      }
       
   
       let messageData = {
