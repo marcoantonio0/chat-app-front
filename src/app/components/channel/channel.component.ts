@@ -113,7 +113,7 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
   ngAfterViewInit(): void {
     this.scroll.scrolled.subscribe((e:any) => {
       // this.sChannel.updateScrollTopChannel(this.channelId || '', e.target.scrollTop);
-      if(e.target.scrollTop <= Math.floor((this.scroll.viewport.scrollMaxY * 95)/100)) {
+      if(e.target.scrollTop <= Math.floor((this.scroll.viewport.scrollMaxY * 75)/100)) {
         this.autoScroll = false;
       } else {
         this.autoScroll = true;
@@ -133,9 +133,11 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
         this.isFirst  = true;
         this.isLoadingMore = true;
         this.scrollTo = this.messages[this.messages.length-1]?._id;
-        this.message.getMessagesAfter(this.channelId || '', this.messages[this.messages.length-1]?._id).subscribe(e => {
-          this.isLoadingMore = false;
-        })
+        if(this.scrollTo != undefined){
+          this.message.getMessagesAfter(this.channelId || '', this.messages[this.messages.length-1]?._id).subscribe(e => {
+            this.isLoadingMore = false;
+          })
+        }
       } 
     });
   }
@@ -337,7 +339,7 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
         recived: false
       };
 
-      if(this.content.value.match(this.mentionsRegex).length >= 0){
+      if(this.content.value.match(this.mentionsRegex)?.length >= 0){
         let mentions = this.content.value.match(this.mentionsRegex);
         mentions.forEach((mention: string) => {
           let id = mention.replace(/[^0-9]+/g, '');
@@ -390,7 +392,7 @@ export class ChannelComponent implements OnInit, OnChanges, AfterViewInit {
 
   deleteMessage(message: any, index: number) {
     this.message.deleteMessage(message).subscribe(r =>{
-      this.messages.splice(index, 1);
+      this.messages.slice(index, 1);
     })
   }
 
